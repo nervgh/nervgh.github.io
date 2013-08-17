@@ -1,0 +1,64 @@
+<!DOCTYPE HTML>
+<html id="ng-app" ng-app="app"> <!-- id="ng-app" IE<8 -->
+
+<head>
+    <link rel="stylesheet" href="/css/animate.css" />
+
+    <style>
+        .t-shirts {
+            border: 1px solid;
+            width: 800px;
+            height: 352px;
+            overflow: hidden;
+            text-align: center;
+            padding: 5px;
+        }
+        .t-shirts img {
+            margin: 0 0 35px 0;
+            position: relative;
+        }
+    </style>
+
+    <script src="/js/angular/angular-1.1.5.js"></script>
+
+    <script>
+        angular.module( 'app', [])
+            .run( function( $rootScope, $timeout ) {
+                $rootScope.model = {};
+
+                $rootScope.model.transitions = 'bounce|bounceIn|bounceInDown|bounceInLeft|bounceInRight|bounceInUp|bounceOut|bounceOutDown|bounceOutLeft|bounceOutRight|bounceOutUp|fadeIn|fadeInDown|fadeInDownBig|fadeInLeft|fadeInLeftBig|fadeInRight|fadeInRightBig|fadeInUp|fadeInUpBig|fadeOut|fadeOutDown|fadeOutDownBig|fadeOutLeft|fadeOutLeftBig|fadeOutRight|fadeOutRightBig|fadeOutUp|fadeOutUpBig|flash|flip|flipInX|flipInY|flipOutX|flipOutY|hinge|lightSpeedIn|lightSpeedOut|pulse|rollIn|rollOut|rotateIn|rotateInDownLeft|rotateInDownRight|rotateInUpLeft|rotateInUpRight|rotateOut|rotateOutDownLeft|rotateOutDownRight|rotateOutUpLeft|rotateOutUpRight|shake|swing|tada|wobble'.split( '|' );
+                $rootScope.model.images = 'angularjs.jpg|bower.jpg|dropbox.jpg|html5.jpg|js.jpg'.split( '|' );
+
+                $rootScope.tick = function() {
+                    $rootScope.model.images.push( $rootScope.model.images.shift() );
+                    $timeout( $rootScope.tick, 2000 );
+                };
+
+                $rootScope.tick();
+            });
+    </script>
+
+</head>
+<body>
+
+    <h1><a href="http://angularjs.org/" target="_blank">Angularjs</a>: dirty animations with <a href="https://github.com/daneden/animate.css" target="_blank">animate.css</a></h1>
+
+    Move:
+    <select ng-model="model.move"
+                    ng-options="item for item in model.transitions"
+                    ng-init="model.move = 'bounceInLeft'">
+    </select>
+
+    <div class="t-shirts">
+        <img ng-repeat="item in model.images"
+                    ng-src="/demo/animation/img/t-shirts/{{ item }}"
+                    ng-animate="{ move: 'animated ' + model.move }" />
+    </div>
+
+    <h2>Transition list</h2>
+    <ul>
+        <li ng-repeat="item in model.transitions">{{ item }}</li>
+    </ul>
+
+</body>
+</html>
