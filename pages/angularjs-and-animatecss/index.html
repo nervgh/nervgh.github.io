@@ -30,7 +30,7 @@
                 $rootScope.model.images = 'angularjs.jpg|bower.jpg|dropbox.jpg|html5.jpg|js.jpg'.split( '|' );
 
                 $rootScope.tick = function() {
-                    $rootScope.model.images.push( $rootScope.model.images.shift() );
+                    $rootScope.model.images.unshift( $rootScope.model.images.pop() );
                     $timeout( $rootScope.tick, 2000 );
                 };
 
