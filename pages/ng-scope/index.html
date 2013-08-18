@@ -1,0 +1,51 @@
+<!DOCTYPE HTML>
+<html id="ng-app" ng-app="app" ng-scroll="foo($event)"> <!-- id="ng-app" IE<8 -->
+
+<head>
+
+    <style>
+        html {
+            height: 4000px;
+        }
+        .outer {
+            overflow: scroll;
+            height: 400px;
+        }
+        .inner {
+            background-color: green;
+            height: 2000px;
+        }
+    </style>
+
+    <script src="/js/angular/angular-1.1.5.js"></script>
+    <script src="/js/angular/directives.js"></script>
+
+    <script>
+        angular
+            .module( 'app', [ 'directives' ])
+
+            .run(function( $rootScope ) {
+                $rootScope.foo = function( event ) {
+                    console.log( event, '$rootScope' );
+                };
+            })
+
+            .controller( 'AppCtrl', function( $scope ) {
+                $scope.bar = function( event, param ) {
+                    console.log( event, param, 'AppCtrl' );
+                };
+            })
+    </script>
+
+</head>
+<body ng-controller="AppCtrl">
+
+    Scroll the page or the div and see a result in the console.
+    Show code <a>here</a>.
+
+    <div class="outer" ng-scroll="bar($event, 1 + 2)">
+        <div class="inner"></div>
+    </div>
+
+</body>
+</html>
