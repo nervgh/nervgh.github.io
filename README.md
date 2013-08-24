@@ -1,11 +1,7 @@
 This is my demo site : )
 
-<h1>Table of Contents</h1>
-<ul>
-    <li>
-        <a href="http://nervgh.github.io/pages/angularjs-and-animatecss">Dirty animations with Angularjs and Animate.css</a>
-    </li>
-    <li>
-        <a href="http://nervgh.github.io/pages/ng-scope">The ng-scroll is angularjs directive</a>
-    </li>
-</ul>
+#Table of Contents
+
+- [Dirty animations with Angularjs and Animate.css](http://nervgh.github.io/pages/angularjs-and-animatecss)
+- [The ng-scroll is angularjs directive](http://nervgh.github.io/pages/ng-scroll)
+- [Tabs is module for angular framework](http://nervgh.github.io/pages/angular-tabs)
