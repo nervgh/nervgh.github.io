@@ -1,0 +1,76 @@
+﻿<!DOCTYPE HTML>
+<!-- 1. ng-file-drop | ng-file-drop="options" -->
+<html id="ng-app" ng-app="app" ng-file-drop> <!-- id="ng-app" IE<8 -->
+
+    <head>
+        <link rel="stylesheet" href="/pages/angular-file-upload/style.css" />
+
+        <!-- Fix for old browsers -->
+        <script src="/js/es5-shim.min.js"></script>
+
+        <!-- Fix for IE<9 in iframe mode -->
+        <!--[if lt IE 9]>
+        <script src="/js/jquery/jquery-1.8.3.min.js"></script>
+        <![endif]-->
+
+        <script src="/js/angular/angular-1.1.5.min.js"></script>
+        <script src="/js/angular/modules/files.js"></script>
+        <script src="/pages/angular-file-upload/controllers.js"></script>
+
+    </head>
+    <body ng-controller="TestController">
+
+        <h1>Angular file upload: test page</h1>
+
+        <a href="https://github.com/nervgh/angular-file-upload">Download / Repository</a>
+        <br />
+        <br />
+
+        <!-- 3. ng-file-over | ng-file-over="className" -->
+        <div class="over-zone" ng-file-over>
+            Base drop zone
+        </div>
+
+        <br />
+
+        <!-- Example: ng-file-drop | ng-file-drop="options" -->
+        <div ng-file-drop="{ url: '/foo' }" ng-file-over="other-over-zone" class="other-drop-zone">
+            One more drop zone with its own settings
+        </div>
+
+        <br />
+
+        <!-- 2. ng-file-select | ng-file-select="options" -->
+        <input ng-file-select type="file" multiple />
+
+        <h2>The queue. Length: {{ uploader.queue.length }}</h2>
+        <ul>
+            <li ng-repeat="item in uploader.queue">
+                <div>Name: {{ item.file.name }}</div>
+                <div>Size: {{ item.file.size }}</div>
+                <div>
+                    Progress: {{ item.progress }}
+                    <div class="item-progress-box">
+                        <div class="item-progress" ng-style="{ 'width': item.progress + '%' }"></div>
+                    </div>
+                </div>
+                <div>Uploaded: {{ item.isUploaded }}</div>
+                <div>
+                    <a ng-href="#" ng-click="$event.preventDefault(); item.upload()" ng-hide="item.isUploaded" >upload</a>
+                    <a ng-href="#" ng-click="$event.preventDefault(); item.remove()">delete</a>
+                </div>
+            </li>
+        </ul>
+        <div ng-show="uploader.queue.length">
+            <div>
+                Total progress: {{ uploader.progress }}
+                <div class="total-progress-box">
+                    <div class="total-progress" ng-style="{ 'width': uploader.progress + '%' }"></div>
+                </div>
+            </div>
+            <a ng-href="#" ng-click="$event.preventDefault(); uploader.uploadAll()" ng-show="uploader.getNotUploadedItems().length">upload all</a>
+            <a ng-href="#" ng-click="$event.preventDefault(); uploader.clearQueue()">delete all</a>
+        </div>
+
+    </body>
+</html>
