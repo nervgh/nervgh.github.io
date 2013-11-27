@@ -46,7 +46,6 @@ Number.isOdd = function(n) {
     return (n & 1) === 1;
 };
 
-
 /**
  * Returns "true" if a number is even
  * @param {Number} n A integer number
@@ -105,4 +104,13 @@ Math.gcd = Math.hcf = function(u, v) {
     return u << shift;
 };
 
+/**
+ * Returns Least Common Multiple
+ * @param {Number} u A positive integer number
+ * @param {Number} v A positive integer number
+ * @return {Number}
+ */
+Math.lcm = function(u, v) {
+    return u * v / Math.gcd(u, v);
+};
 
