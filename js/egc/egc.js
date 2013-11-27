@@ -1,6 +1,6 @@
 /**
  * THE EXPANSION OF GLOBAL CONSTRUCTORS
- * @version: 2013-11-26
+ * @version: 2013-11-28
  * @author: nerv
  */
 
@@ -45,7 +45,6 @@ Number.isFloat = function(n) {
 Number.isOdd = function(n) {
     return (n & 1) === 1;
 };
-
 
 /**
  * Returns "true" if a number is even
@@ -105,4 +104,13 @@ Math.gcd = Math.hcf = function(u, v) {
     return u << shift;
 };
 
+/**
+ * Returns Least Common Multiple
+ * @param {Number} u A positive integer number
+ * @param {Number} v A positive integer number
+ * @return {Number}
+ */
+Math.lcm = function(u, v) {
+    return u * v / Math.gcd(u, v);
+};
 
