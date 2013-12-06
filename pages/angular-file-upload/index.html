@@ -42,7 +42,7 @@
 
             <div class="row">
 
-                <div class="col-md-4">
+                <div class="col-md-3">
 
                     <h3>Select files</h3>
 
@@ -63,51 +63,55 @@
 
                 </div>
 
-                <div class="col-md-8" style="margin-bottom: 40px">
+                <div class="col-md-9" style="margin-bottom: 40px">
 
                     <h3>Upload queue</h3>
                     <p>Queue length: {{ uploader.queue.length }}</p>
 
                     <table class="table">
                         <thead>
-                            <tr>
-                                <th width="50%">Name</th>
-                                <th ng-show="uploader.hasHTML5">Size</th>
-                                <th ng-show="uploader.hasHTML5">Progress</th>
-                                <th>Ok</th>
-                                <th>Actions</th>
-                            </tr>
+                        <tr>
+                            <th width="50%">Name</th>
+                            <th ng-show="uploader.hasHTML5">Size</th>
+                            <th ng-show="uploader.hasHTML5">Progress</th>
+                            <th>Success</th>
+                            <th>Error</th>
+                            <th>Actions</th>
+                        </tr>
                         </thead>
                         <tbody>
-                            <tr ng-repeat="item in uploader.queue">
-                                <td><strong>{{ item.file.name }}</strong></td>
-                                <td ng-show="uploader.hasHTML5" nowrap>{{ item.file.size/1024/1024|number:2 }} MB</td>
-                                <td ng-show="uploader.hasHTML5">
-                                    <div class="progress" style="margin-bottom: 0;">
-                                        <div class="progress-bar" role="progressbar" ng-style="{ 'width': item.progress + '%' }"></div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <i class="glyphicon glyphicon-ok" ng-show="item.isUploaded"></i>
-                                </td>
-                                <td nowrap>
-                                    <button type="button" class="btn btn-success btn-xs" ng-click="item.upload()" ng-disabled="item.isUploaded">
-                                        <span class="glyphicon glyphicon-upload"></span> Upload
-                                    </button>
-                                    <button type="button" class="btn btn-danger btn-xs" ng-click="item.remove()">
-                                        <span class="glyphicon glyphicon-trash"></span> Remove
-                                    </button>
-                                </td>
-                            </tr>
+                        <tr ng-repeat="item in uploader.queue">
+                            <td><strong>{{ item.file.name }}</strong></td>
+                            <td ng-show="uploader.hasHTML5" nowrap>{{ item.file.size/1024/1024|number:2 }} MB</td>
+                            <td ng-show="uploader.hasHTML5">
+                                <div class="progress" style="margin-bottom: 0;">
+                                    <div class="progress-bar" role="progressbar" ng-style="{ 'width': item.progress + '%' }"></div>
+                                </div>
+                            </td>
+                            <td>
+                                <i class="glyphicon glyphicon-ok" ng-show="item.isSuccess"></i>
+                            </td>
+                            <td>
+                                <i class="glyphicon glyphicon-remove" ng-show="item.isError"></i>
+                            </td>
+                            <td nowrap>
+                                <button type="button" class="btn btn-success btn-xs" ng-click="item.upload()" ng-disabled="item.isReady || item.isUploading || item.isSuccess">
+                                    <span class="glyphicon glyphicon-upload"></span> Upload
+                                </button>
+                                <button type="button" class="btn btn-danger btn-xs" ng-click="item.remove()">
+                                    <span class="glyphicon glyphicon-trash"></span> Remove
+                                </button>
+                            </td>
+                        </tr>
                         </tbody>
                     </table>
 
                     <div>
                         <p>
                             Queue progress:
-                            <div class="progress" style="">
-                                <div class="progress-bar" role="progressbar" ng-style="{ 'width': uploader.progress + '%' }"></div>
-                            </div>
+                        <div class="progress" style="">
+                            <div class="progress-bar" role="progressbar" ng-style="{ 'width': uploader.progress + '%' }"></div>
+                        </div>
                         </p>
                         <button type="button" class="btn btn-success btn-s" ng-click="uploader.uploadAll()" ng-disabled="!uploader.getNotUploadedItems().length">
                             <span class="glyphicon glyphicon-upload"></span> Upload all
