@@ -72,12 +72,12 @@ Number.isDivided = function(n,d) {
  */
 
 /**
- * Returns Greatest Common Divisor / Highest Common Factor
+ * Returns Greatest Common Divisor
  * @param {Number} u A positive integer number
  * @param {Number} v A positive integer number
  * @return {Number}
  */
-Math.gcd = Math.hcf = function(u, v) {
+Math.gcd = function(u, v) {
     var shift = 0, diff = 0;
 
     if (u === 0 || v === 0) {
@@ -114,3 +114,36 @@ Math.lcm = function(u, v) {
     return u * v / Math.gcd(u, v);
 };
 
+
+
+/**
+ * OBJECT CONSTRUCTOR EXTENSIONS
+ */
+
+/**
+ * Creates clone of object
+ * http://stackoverflow.com/a/728694
+ * https://github.com/andrewplummer/Sugar/blob/master/lib/object.js#L328
+ * @param {Object} obj
+ * @return {Object}
+ */
+Object.clone = function(obj) {
+    // Number, String, Boolean, null, undefined
+    if (null === obj || 'object' !== typeof obj) {
+        return obj;
+    }
+
+    // Date and RegExp
+    if (obj instanceof Date || obj instanceof RegExp) {
+        return new obj.constructor(obj);
+        // Array and Object
+    } else {
+        var copy = obj instanceof Array ? [] : {};
+        for (var key in obj) {
+            if (obj.hasOwnProperty(key)) {
+                copy[key] = this.clone(obj[key]);
+            }
+        }
+        return copy;
+    }
+};
