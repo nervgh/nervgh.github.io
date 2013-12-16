@@ -57,6 +57,36 @@
                 ok( Math.gcd(2000, 440) === 40, 'Math.gcd(2000, 440) === 40' );
             });
 
+
+        module( 'Object' )
+
+            test( 'clone', function() {
+                var obj1 = {
+                    a: 1,
+                    b: null,
+                    c: 'string',
+                    d: NaN,
+                    e: undefined,
+                    f: /[a-z]/gim,
+                    g: new Date(),
+                    h: {},
+                    i: []
+                };
+                var obj2 = {
+                    a: obj1,
+                    b: [
+                        obj1,
+                        obj1
+                    ]
+                };
+                var clone1 = Object.clone(obj1);
+                var clone2 = Object.clone(obj2);
+                console.log(clone1,clone2);
+
+                ok(JSON.stringify(clone1) === JSON.stringify(obj1), 'JSON.stringify(clone1) === JSON.stringify(obj1)' );
+                ok(JSON.stringify(clone2) === JSON.stringify(obj2), 'JSON.stringify(clone2) === JSON.stringify(obj2)' );
+            });
+
     </script>
 
 </head>
