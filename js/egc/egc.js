@@ -136,7 +136,7 @@ Object.clone = function(obj) {
     // Date and RegExp
     if (obj instanceof Date || obj instanceof RegExp) {
         return new obj.constructor(obj);
-        // Array and Object
+    // Array and Object
     } else {
         var copy = obj instanceof Array ? [] : {};
         for (var key in obj) {
