@@ -7,7 +7,7 @@ angular.module('app', ['angularFileUpload'])
         // create a uploader with options
         var uploader = $scope.uploader = $fileUploader.create({
             scope: $scope,                          // to automatically update the html. Default: $rootScope
-            url: '/examples/upload.php',
+            url: 'upload.php',
             formData: [
                 { key: 'value' }
             ],
@@ -34,10 +34,6 @@ angular.module('app', ['angularFileUpload'])
 
         uploader.bind('afteraddingall', function (event, items) {
             console.info('After adding all files', items);
-        });
-
-        uploader.bind('changedqueue', function (event, items) {
-            console.info('Changed queue', items);
         });
 
         uploader.bind('beforeupload', function (event, item) {
