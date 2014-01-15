@@ -1,29 +1,21 @@
-'use strict';
+angular.module('app', ['angularFileUpload'])
 
-
-angular
-
-
-    .module('app', ['angularFileUpload'])
-
-
+    // The example of the full functionality
     .controller('TestController', function ($scope, $fileUploader) {
-        // Creates a uploader
+        'use strict';
+
+        // create a uploader with options
         var uploader = $scope.uploader = $fileUploader.create({
-            scope: $scope,
+            scope: $scope,                          // to automatically update the html. Default: $rootScope
             url: 'upload.php'
         });
 
-
         // ADDING FILTERS
 
-        // Images only
-        uploader.filters.push(function(item /*{File|HTMLInputElement}*/) {
-            var type = uploader.isHTML5 ? item.type : '/' + item.value.slice(item.value.lastIndexOf('.') + 1);
-            type = '|' + type.toLowerCase().slice(type.lastIndexOf('/') + 1) + '|';
-            return '|jpg|png|jpeg|bmp|gif|'.indexOf(type) !== -1;
+        uploader.filters.push(function(item /*{File|HTMLInput}*/) { // user filter
+            console.info('filter1');
+            return true;
         });
-
 
         // REGISTER HANDLERS
 
@@ -66,4 +58,16 @@ angular
         uploader.bind('completeall', function (event, items) {
             console.info('Complete all', items);
         });
+
+
+        // -------------------------------
+
+
+        var controller = $scope.controller = {
+            isImage: function(item) {
+                var type = '|' + item.type.slice(item.type.lastIndexOf('/') + 1) + '|';
+                return '|jpg|png|jpeg|bmp|gif|'.indexOf(type) !== -1;
+            }
+        };
+
     });
