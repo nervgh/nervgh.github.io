@@ -6,89 +6,11 @@
     <meta charset="utf-8">
     <link rel="stylesheet" href="/css/qunit/qunit-1.12.0.css" />
 
+    <script src="/js/jquery/jquery-1.8.3.min.js"></script>
     <script src="/js/qunit/qunit-1.12.0.js"></script>
-    <script src="/js/egc/egc.js"></script>
+    <script src="/js/yum/yum.js"></script>
 
-    <script>
-        module( 'Number' )
-
-            test( 'isNumber', function() {
-                ok( Number.isNumber("") === false, 'Number.isNumber("") === false' );
-                ok( Number.isNumber(0) === true, 'Number.isNumber(0) === true' );
-                ok( Number.isNumber(NaN) === false, 'Number.isNumber(NaN) === false' );
-                ok( Number.isNumber(Infinity) === true, 'Number.isNumber(Infinity) === true' );
-                ok( Number.isNumber(null) === false, 'Number.isNumber(null) === false' );
-                ok( Number.isNumber(undefined) === false, 'Number.isNumber(undefined) === false' );
-                ok( Number.isNumber({}) === false, 'Number.isNumber({}) === false' );
-                ok( Number.isNumber(12.301) === true, 'Number.isNumber(12.301) === true' );
-            });
-
-            test( 'isInteger', function() {
-                ok( Number.isInteger(1) === true, 'Number.isInteger(1) === true' );
-                ok( Number.isInteger(1.2) === false, 'Number.isInteger(1.2) === false' );
-            });
-
-            test( 'isFloat', function() {
-                ok( Number.isFloat(1) === false, 'Number.isFloat(1) === false' );
-                ok( Number.isFloat(1.2) === true, 'Number.isFloat(1.2) === true' );
-            });
-
-            test( 'isOdd', function() {
-                ok( Number.isOdd(51) === true, 'Number.isOdd(51) === true' );
-                ok( Number.isOdd(64) === false, 'Number.isOdd(64) === false' );
-            });
-
-            test( 'isEven', function() {
-                ok( Number.isEven(51) === false, 'Number.isEven(51) === false' );
-                ok( Number.isEven(64) === true, 'Number.isEven(64) === true' );
-            });
-
-            test( 'isDivided', function() {
-                ok( Number.isDivided(20, 4) === true, 'Number.isDivided(20, 4) === true' );
-                ok( Number.isDivided(20, 3) === false, 'Number.isDivided(20, 3) === false' );
-            });
-
-
-        module( 'Math' )
-
-            test( 'gcd', function() {
-                ok( Math.gcd(100, 150) === 50, 'Math.gcd(100, 150) === 50' );
-                ok( Math.gcd(0, 21) === 21, 'Math.gcd(0, 21) === 21' );
-                ok( Math.gcd(2000, 440) === 40, 'Math.gcd(2000, 440) === 40' );
-            });
-
-
-        module( 'Object' )
-
-            test( 'clone', function() {
-                var obj1 = {
-                    a: 1,
-                    b: null,
-                    c: 'string',
-                    d: NaN,
-                    e: undefined,
-                    f: /[a-z]/gim,
-                    g: new Date(),
-                    h: {},
-                    i: [],
-                    j: function() {}
-                };
-                var obj2 = {
-                    a: obj1,
-                    b: [
-                        obj1,
-                        obj1
-                    ]
-                };
-                var clone1 = Object.clone(obj1);
-                var clone2 = Object.clone(obj2);
-                console.log(clone1,clone2);
-
-                ok(JSON.stringify(clone1) === JSON.stringify(obj1), 'JSON.stringify(clone1) === JSON.stringify(obj1)' );
-                ok(JSON.stringify(clone2) === JSON.stringify(obj2), 'JSON.stringify(clone2) === JSON.stringify(obj2)' );
-            });
-
-    </script>
+    <script src="tests.js"></script>
 
 </head>
 <body>
