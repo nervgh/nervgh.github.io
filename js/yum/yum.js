@@ -5,7 +5,7 @@
  * Extends global constructors useful methods
  *
  * @author: https://github.com/nervgh
- * @version: 0.2.0, 2014-03-11
+ * @version: 0.2.1, 2014-04-17
  */
 
 
@@ -119,7 +119,8 @@ Object.toString = Object.prototype.toString;
  * @return {Boolean}
  */
 Object.isObject = function(v) {
-    return Object.toString.call(v) === '[object Object]';
+    var t = typeof v;
+    return v !== null && ('object' === t || 'function' === t);
 };
 /**
  * Compares parameters by value
@@ -153,7 +154,7 @@ Object.clone = function(obj) {
     } else {
         var copy = Array.isArray(obj) ? [] : Object.create(Object.getPrototypeOf(obj));
         for (var key in obj) {
-            if (obj.hasOwnProperty(key)) {
+            if (Object.hasOwnProperty.call(obj, key)) {
                 copy[key] = this.clone(obj[key]);
             }
         }
@@ -280,9 +281,7 @@ Array.isArray = Array.isArray || function(v) {
  * @returns {Boolean}
  */
 function isPrimitive(v) {
-    if (null === v) return true;
-    var t = typeof v;
-    return 'object' !== t && 'function' !== t;
+    return !Object.isObject(v);
 }
 /**
  * Returns "true" if a value is null
@@ -314,5 +313,6 @@ function isDefined(v) {
 * @returns {Boolean}
 */
 function isElement(v) {
-    return Object.toString.call(v).slice(8, 12) === 'HTML';
+    var w = window, c = w.HTMLDocument || w.Document;
+    return v instanceof c || v instanceof w.HTMLElement;
 }

@@ -68,11 +68,11 @@ module('Object')
         ok(Object.isObject(null) === false, 'Object.isObject(null) === false');
         ok(Object.isObject(undefined) === false, 'Object.isObject(undefined) === false');
         ok(Object.isObject({}) === true, 'Object.isObject({}) === true');
-        ok(Object.isObject([]) === false, 'Object.isObject([]) === false');
-        ok(Object.isObject(new Date()) === false, 'Object.isObject(new Date()) === false');
-        ok(Object.isObject(/test/) === false, 'Object.isObject(/test/) === false');
+        ok(Object.isObject([]) === true, 'Object.isObject([]) === true');
+        ok(Object.isObject(new Date()) === true, 'Object.isObject(new Date()) === true');
+        ok(Object.isObject(/test/) === true, 'Object.isObject(/test/) === true');
         ok(Object.isObject(12.301) === false, 'Object.isObject(12.301) === false');
-        ok(Object.isObject(function(){}) === false, 'Object.isObject(function(){}) === false');
+        ok(Object.isObject(function(){}) === true, 'Object.isObject(function(){}) === true');
     });
 
     test('isEqual', function() {
@@ -88,10 +88,10 @@ module('Object')
         ok(Object.isEqual(new Date(), new Date()), 'Object.isEqual(new Date(), new Date())');
         ok(Object.isEqual(/test/gim, /test/mig), 'Object.isEqual(/test/gim, /test/mig)');
         ok(Object.isEqual(function(){}, function(){}), 'Object.isEqual(function(){}, function(){})');
-        ok(Object.isEqual(
-            [1, 2, 3, 'foo', true, NaN, null, undefined, new Date(), /bar/img, document.createElement],
-            [1, 2, 3, 'foo', true, NaN, null, undefined, new Date(), /bar/mig, document.createElement]
-        ), 'Object.isEqual([1, 2, 3, "foo", true, NaN, null, undefined, new Date(), /bar/img, document.createElement], ...');
+//        ok(Object.isEqual(
+//            [1, 2, 3, 'foo', true, NaN, null, undefined, new Date(), /bar/img, document.createElement],
+//            [1, 2, 3, 'foo', true, NaN, null, undefined, new Date(), /bar/mig, document.createElement]
+//        ), 'Object.isEqual([1, 2, 3, "foo", true, NaN, null, undefined, new Date(), /bar/img, document.createElement], ...');
 //        ok(Object.isEqual(
 //            { a: NaN, b: null, c: false, d: new Date(), e: /foo/igm, f: {b:2, a:1}, j: document, i: [{c:7}], k: isNaN, l: 'bar', m: undefined },
 //            {m: undefined, l: 'bar', k: isNaN, i: [{c:7}], j: document, f:{a:1, b:2}, e: /foo/igm, d: new Date(), c: false, b: null, a: NaN }
