@@ -2,6 +2,7 @@ This is my demo site : )
 
 #Table of Contents
 
+- [Speech Recognition](http://nervgh.github.io/pages/speech-recognition)
 - [Dirty animations with Angularjs and Animate.css](http://nervgh.github.io/pages/angularjs-and-animatecss)
 - [The ng-scroll is angularjs directive](http://nervgh.github.io/pages/ng-scroll)
 - [Tabs is module for angular framework](http://nervgh.github.io/pages/angular-tabs)

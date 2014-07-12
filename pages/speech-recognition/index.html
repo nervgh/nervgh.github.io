@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Speech Recognition</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="/css/bootstrap.min.css"/>
+    <script src="/js/VoiceRecognition.js"></script>
+    <style>
+        .microphone {
+            width: 128px;
+            height: 128px;
+            border-radius: 64px;
+            border: 2px solid #5cb85c;
+            cursor: pointer;
+            background-color: #5cb85c;
+        }
+        .microphone:hover {
+            border: 2px solid green;
+        }
+        .microphone.recorded {
+            background-color: coral;
+            border: 2px solid coral;
+        }
+        .microphone.recorded:hover {
+            border: 2px solid chocolate;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="navbar-inverse">
+        <div class="container">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="#">Speech Recognition</a>
+            </div>
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav">
+                    <li><a href="https://dvcs.w3.org/hg/speech-api/raw-file/tip/speechapi.html" target="_blank">Web Speech Api</a></li>
+                    <li><a href="http://updates.html5rocks.com/2013/01/Voice-Driven-Web-Apps-Introduction-to-the-Web-Speech-API" target="_blank">Voice Driven Web Apps: Introduction to the Web Speech API</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-9">
+                <div class="page-header">
+                    <h1>Speech Recognition</h1>
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">Interim result</h3>
+                            </div>
+                            <div class="panel-body">
+                                <p id="interim"></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-6">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">Final result</h3>
+                            </div>
+                            <div class="panel-body">
+                                <div id="final"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row" style="text-align: center;">
+                    <form id="controls" class="form-inline">
+                        <img id="toggle" src="img/microphone_2.png" class="microphone" />
+                        <br/>
+                        <br/>
+                        <select id="language" class="form-control" style="width: 120px;">
+                            <option value="en-GB">English</option>
+                            <option value="ru-RU" selected="">Русский</option>
+                        </select>
+                        <br/>
+                        <br/>
+                        <p>
+                            Click on the microphone icon and begin speaking<br/>
+                            Click again and speech recognition will be stopped
+                        </p>
+                    </form>
+                    <p id="dummy" class="alert-warning" style="display: none;">
+                        Sorry. Your browser not support speech recognition.<br/>
+                        You can try to update it or open this page in Chrome.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            var dom = {
+                language: document.getElementById('language'),
+                toggle: document.getElementById('toggle'),
+                interim: document.getElementById('interim'),
+                final: document.getElementById('final'),
+                controls: document.getElementById('controls'),
+                dummy: document.getElementById('dummy'),
+                paragraph: null
+            };
+
+            if (!VoiceRecognition.isSupported()) {
+                dom.controls.style.display = 'none';
+                dom.dummy.style.display = 'block';
+                return;
+            }
+
+            var recognition = new VoiceRecognition();
+
+            recognition.interimResults = true;
+            recognition.continuous = true;
+            recognition.lang = 'ru-RU';
+
+            recognition.onStart = function() {
+                dom.toggle.classList.add('recorded');
+                dom.language.disabled = true;
+                dom.paragraph = document.createElement('p');
+                dom.final.appendChild(dom.paragraph);
+            };
+
+            recognition.onResult = function() {
+                dom.interim.innerHTML = this.interimTranscript;
+                dom.paragraph.innerHTML = this.finalTranscript;
+            };
+
+            recognition.onEnd = function() {
+                dom.toggle.classList.remove('recorded');
+                dom.language.disabled = false;
+            };
+
+            dom.toggle.onclick = function() {
+                recognition.toggle();
+            };
+            dom.language.oninput = function() {
+                recognition.lang = this.value;
+            };
+
+            console.log('recognition', recognition);
+        }());
+    </script>
+
+</body>
+</html>
