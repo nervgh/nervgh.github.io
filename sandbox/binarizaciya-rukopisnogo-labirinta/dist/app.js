@@ -58,8 +58,38 @@
 	var decoder = new Decoder();
 	
 	decoder.reader.onReadComplete = function (image, matrix) {
-	    //matrix.invert();
-	    //matrix.greyscale();
+	    matrix.normalize();
+	    var map = new Map();
+	    matrix.forEach(function (cell) {
+	        var rgba = cell.rgba;
+	
+	        map.set(String(rgba), rgba);
+	    });
+	    var _iteratorNormalCompletion = true;
+	    var _didIteratorError = false;
+	    var _iteratorError = undefined;
+	
+	    try {
+	        for (var _iterator = map.values()[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	            var item = _step.value;
+	
+	            console.log(item);
+	        }
+	    } catch (err) {
+	        _didIteratorError = true;
+	        _iteratorError = err;
+	    } finally {
+	        try {
+	            if (!_iteratorNormalCompletion && _iterator["return"]) {
+	                _iterator["return"]();
+	            }
+	        } finally {
+	            if (_didIteratorError) {
+	                throw _iteratorError;
+	            }
+	        }
+	    }
+	
 	    decoder.writer.writeAsCanvas(matrix, stage);
 	};
 	
@@ -274,6 +304,32 @@
 	                        cb(cell);
 	                    }
 	                }
+	            }
+	        },
+	        normalize: {
+	            /**
+	             *
+	             */
+	
+	            value: function normalize() {
+	                var full = 255;
+	                var half = full / 2;
+	                var modify = function (cell) {
+	                    var rgba = cell.rgba;
+	
+	                    var _rgba = _slicedToArray(rgba, 3);
+	
+	                    var r = _rgba[0];
+	                    var g = _rgba[1];
+	                    var b = _rgba[2];
+	
+	                    r = r < half ? 0 : full;
+	                    g = g < half ? 0 : full;
+	                    b = b < half ? 0 : full;
+	                    var color = r + g + b < full ? 0 : full;
+	                    rgba[0] = rgba[1] = rgba[2] = color;
+	                };
+	                this.forEach(modify);
 	            }
 	        },
 	        invert: {

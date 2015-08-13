@@ -55,6 +55,23 @@ export default class Matrix {
         }
     }
     /**
+     *
+     */
+    normalize() {
+        const full = 255;
+        const half = full / 2;
+        let modify = (cell) => {
+            let {rgba} = cell;
+            let [r, g, b] = rgba;
+            r = r < half ? 0 : full;
+            g = g < half ? 0 : full;
+            b = b < half ? 0 : full;
+            let color = (r + g + b) < full ? 0 : full;
+            rgba[0] = rgba[1] = rgba[2] = color;
+        };
+        this.forEach(modify);
+    }
+    /**
      * @see https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Pixel_manipulation_with_canvas#Grayscaling_and_inverting_colors
      */
     invert() {
