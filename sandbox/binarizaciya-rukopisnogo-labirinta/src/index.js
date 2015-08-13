@@ -12,6 +12,7 @@ let decoder = new Decoder();
 
 decoder.reader.onReadComplete = function(image, matrix) {
     //matrix.invert();
+    //matrix.greyscale();
     decoder.writer.writeAsCanvas(matrix, stage);
 };
 

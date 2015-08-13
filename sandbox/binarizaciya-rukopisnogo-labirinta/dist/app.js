@@ -59,6 +59,7 @@
 	
 	decoder.reader.onReadComplete = function (image, matrix) {
 	    //matrix.invert();
+	    //matrix.greyscale();
 	    decoder.writer.writeAsCanvas(matrix, stage);
 	};
 	
@@ -282,27 +283,20 @@
 	
 	            value: function invert() {
 	                var MAX = 255;
-	                var _PRIVATE = this[__PRIVATE];
-	                var width = _PRIVATE.width;
-	                var height = _PRIVATE.height;
-	                var data = _PRIVATE.data;
+	                var modify = function (cell) {
+	                    var rgba = cell.rgba;
 	
-	                for (var i = 0; i < height; i++) {
-	                    for (var j = 0; j < width; j++) {
-	                        var cell = data[i][j];
-	                        var rgba = cell.rgba;
+	                    var _rgba = _slicedToArray(rgba, 3);
 	
-	                        var _rgba = _slicedToArray(rgba, 3);
+	                    var r = _rgba[0];
+	                    var g = _rgba[1];
+	                    var b = _rgba[2];
 	
-	                        var r = _rgba[0];
-	                        var g = _rgba[1];
-	                        var b = _rgba[2];
-	
-	                        rgba[0] = MAX - r;
-	                        rgba[1] = MAX - g;
-	                        rgba[2] = MAX - b;
-	                    }
-	                }
+	                    rgba[0] = MAX - r;
+	                    rgba[1] = MAX - g;
+	                    rgba[2] = MAX - b;
+	                };
+	                this.forEach(modify);
 	            }
 	        },
 	        greyscale: {
@@ -316,27 +310,19 @@
 	                var R = 0.299;
 	                var G = 0.587;
 	                var B = 0.114;
-	                var round = Math.round;
-	                var _PRIVATE = this[__PRIVATE];
-	                var width = _PRIVATE.width;
-	                var height = _PRIVATE.height;
-	                var data = _PRIVATE.data;
+	                var modify = function (cell) {
+	                    var rgba = cell.rgba;
 	
-	                for (var i = 0; i < height; i++) {
-	                    for (var j = 0; j < width; j++) {
-	                        var cell = data[i][j];
-	                        var rgba = cell.rgba;
+	                    var _rgba = _slicedToArray(rgba, 3);
 	
-	                        var _rgba = _slicedToArray(rgba, 3);
+	                    var r = _rgba[0];
+	                    var g = _rgba[1];
+	                    var b = _rgba[2];
 	
-	                        var r = _rgba[0];
-	                        var g = _rgba[1];
-	                        var b = _rgba[2];
-	
-	                        var grey = round(r * R + g * G + b * B);
-	                        rgba[0] = rgba[1] = rgba[2] = grey;
-	                    }
-	                }
+	                    var grey = Math.round(r * R + g * G + b * B);
+	                    rgba[0] = rgba[1] = rgba[2] = grey;
+	                };
+	                this.forEach(modify);
 	            }
 	        },
 	        toImageData: {

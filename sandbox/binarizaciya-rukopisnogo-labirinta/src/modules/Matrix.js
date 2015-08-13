@@ -59,17 +59,14 @@ export default class Matrix {
      */
     invert() {
         const MAX = 255;
-        let {width, height, data} = this[__PRIVATE];
-        for(let i = 0; i < height; i++) {
-            for(let j = 0; j < width; j++) {
-                let cell = data[i][j];
-                let {rgba} = cell;
-                let [r, g, b] = rgba;
-                rgba[0] = MAX - r;
-                rgba[1] = MAX - g;
-                rgba[2] = MAX - b;
-            }
-        }
+        let modify = (cell) => {
+            let {rgba} = cell;
+            let [r, g, b] = rgba;
+            rgba[0] = MAX - r;
+            rgba[1] = MAX - g;
+            rgba[2] = MAX - b;
+        };
+        this.forEach(modify);
     }
     /**
      * @see http://jscience.org/experimental/javadoc/org/jscience/computing/ai/vision/GreyscaleFilter.html
@@ -80,17 +77,13 @@ export default class Matrix {
         const R = 0.299;
         const G = 0.587;
         const B = 0.114;
-        let {round} = Math;
-        let {width, height, data} = this[__PRIVATE];
-        for(let i = 0; i < height; i++) {
-            for(let j = 0; j < width; j++) {
-                let cell = data[i][j];
-                let {rgba} = cell;
-                let [r, g, b] = rgba;
-                let grey = round(r * R + g * G + b * B);
-                rgba[0] = rgba[1] = rgba[2] = grey;
-            }
-        }
+        let modify = (cell) => {
+            let {rgba} = cell;
+            let [r, g, b] = rgba;
+            let grey = Math.round(r * R + g * G + b * B);
+            rgba[0] = rgba[1] = rgba[2] = grey;
+        };
+        this.forEach(modify);
     }
     /**
      * @returns {ImageData}
