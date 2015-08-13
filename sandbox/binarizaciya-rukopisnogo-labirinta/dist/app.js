@@ -57,43 +57,11 @@
 	
 	var decoder = new Decoder();
 	
-	decoder.reader.onReadComplete = function (image, matrix) {
-	    matrix.normalize();
-	    var map = new Map();
-	    matrix.forEach(function (cell) {
-	        var rgba = cell.rgba;
-	
-	        map.set(String(rgba), rgba);
-	    });
-	    var _iteratorNormalCompletion = true;
-	    var _didIteratorError = false;
-	    var _iteratorError = undefined;
-	
-	    try {
-	        for (var _iterator = map.values()[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-	            var item = _step.value;
-	
-	            console.log(item);
-	        }
-	    } catch (err) {
-	        _didIteratorError = true;
-	        _iteratorError = err;
-	    } finally {
-	        try {
-	            if (!_iteratorNormalCompletion && _iterator["return"]) {
-	                _iterator["return"]();
-	            }
-	        } finally {
-	            if (_didIteratorError) {
-	                throw _iteratorError;
-	            }
-	        }
-	    }
-	
+	decoder.onDecodeComplete = function (matrix) {
 	    decoder.writer.writeAsCanvas(matrix, stage);
 	};
 	
-	decoder.reader.readAsMatrix(image);
+	decoder.decode(image);
 
 /***/ },
 /* 1 */
@@ -121,16 +89,39 @@
 	
 	        this.reader = new Reader();
 	        this.writer = new Writer();
-	        //this.__matrix = undefined;
-	        //this.reader.readAsMatrix(image);
+	        this.matrix = null;
+	        this.reader.onReadComplete = this.__onReadComplete.bind(this);
 	    }
 	
 	    _createClass(Decoder, {
 	        decode: {
-	            value: function decode() {}
+	            /**
+	             * @param {HTMLImageElement} image
+	             */
+	
+	            value: function decode(image) {
+	                this.reader.readAsMatrix(image);
+	            }
 	        },
 	        onDecodeComplete: {
+	            /**
+	             * Callback
+	             */
+	
 	            value: function onDecodeComplete() {}
+	        },
+	        __onReadComplete: {
+	            /**
+	             * @param {HTMLImageElement} image
+	             * @param {Matrix} matrix
+	             * @private
+	             */
+	
+	            value: function __onReadComplete(image, matrix) {
+	                matrix.normalize();
+	                this.matrix = matrix;
+	                this.onDecodeComplete(matrix);
+	            }
 	        }
 	    });
 	

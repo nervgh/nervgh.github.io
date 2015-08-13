@@ -12,13 +12,29 @@ export default class Decoder {
     constructor() {
         this.reader = new Reader();
         this.writer = new Writer();
-        //this.__matrix = undefined;
-        //this.reader.readAsMatrix(image);
+        this.matrix = null;
+        this.reader.onReadComplete = this.__onReadComplete.bind(this);
     }
-    decode() {
-
+    /**
+     * @param {HTMLImageElement} image
+     */
+    decode(image) {
+        this.reader.readAsMatrix(image);
     }
+    /**
+     * Callback
+     */
     onDecodeComplete() {
 
+    }
+    /**
+     * @param {HTMLImageElement} image
+     * @param {Matrix} matrix
+     * @private
+     */
+    __onReadComplete(image, matrix) {
+        matrix.normalize();
+        this.matrix = matrix;
+        this.onDecodeComplete(matrix);
     }
 }
