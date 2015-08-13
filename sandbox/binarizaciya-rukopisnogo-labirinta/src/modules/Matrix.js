@@ -15,41 +15,48 @@ export default class Matrix {
     constructor(data) {
         this[__PRIVATE] = Matrix.factory(data);
     }
-    ///**
-    // * @param {Number} rowIndex
-    // * @param cellIndex
-    // * @returns {*}
-    // */
-    //get(rowIndex, cellIndex) {
-    //    let {width, height, data} = this[__PRIVATE];
-    //    cellIndex = Math.min(cellIndex, width);
-    //    cellIndex = Math.max(cellIndex, 0);
-    //    rowIndex = Math.min(rowIndex, height);
-    //    rowIndex = Math.max(rowIndex, 0);
-    //    return data[rowIndex][cellIndex];
-    //}
-    ///**
-    // * @returns {Number}
-    // */
-    //get width() {
-    //    let {width} = this[__PRIVATE];
-    //    return width;
-    //}
-    ///**
-    // * @returns {Number}
-    // */
-    //get height() {
-    //    let {height} = this[__PRIVATE];
-    //    return height;
-    //}
+    /**
+     *
+     */
+    destroy() {
+        let {data} = this[__PRIVATE];
+        data.length = 0;
+    }
+    /**
+     * @param {Number} rowIndex
+     * @param cellIndex
+     * @returns {*}
+     */
+    get(rowIndex, cellIndex) {
+        let {width, height, data} = this[__PRIVATE];
+        //cellIndex = Math.min(cellIndex, width);
+        //cellIndex = Math.max(cellIndex, 0);
+        //rowIndex = Math.min(rowIndex, height);
+        //rowIndex = Math.max(rowIndex, 0);
+        return data[rowIndex][cellIndex];
+    }
+    /**
+     * @returns {Number}
+     */
+    get width() {
+        let {width} = this[__PRIVATE];
+        return width;
+    }
+    /**
+     * @returns {Number}
+     */
+    get height() {
+        let {height} = this[__PRIVATE];
+        return height;
+    }
     /**
      * @param {Function} cb
      */
     forEach(cb) {
-        let {width, height, data} = this[__PRIVATE];
+        let {width, height} = this;
         for(let i = 0; i < height; i++) {
             for(let j = 0; j < width; j++) {
-                let cell = data[i][j];
+                let cell = this.get(i, j);
                 cb(cell);
             }
         }
@@ -107,26 +114,24 @@ export default class Matrix {
      */
     toImageData() {
         const STEP = 4;
-        let {width, height, data} = this[__PRIVATE];
+        let {width, height} = this;
         let array = new Uint8ClampedArray(width * height * STEP);
         let c0 = 0; // counter
         let c1 = 1; // counter
         let c2 = 2; // counter
         let c3 = 3; // counter
-        for(let i = 0; i < height; i++) {
-            for(let j = 0; j < width; j++) {
-                let cell = data[i][j];
-                let {rgba} = cell;
-                array[c0] = rgba[0];
-                array[c1] = rgba[1];
-                array[c2] = rgba[2];
-                array[c3] = rgba[3];
-                c0 += STEP;
-                c1 += STEP;
-                c2 += STEP;
-                c3 += STEP;
-            }
-        }
+        let callback = (cell) => {
+            let {rgba} = cell;
+            array[c0] = rgba[0];
+            array[c1] = rgba[1];
+            array[c2] = rgba[2];
+            array[c3] = rgba[3];
+            c0 += STEP;
+            c1 += STEP;
+            c2 += STEP;
+            c3 += STEP;
+        };
+        this.forEach(callback);
         return new ImageData(array, width, height);
     }
     /**

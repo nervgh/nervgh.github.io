@@ -260,47 +260,73 @@
 	    }
 	
 	    _createClass(Matrix, {
-	        forEach: {
-	            ///**
-	            // * @param {Number} rowIndex
-	            // * @param cellIndex
-	            // * @returns {*}
-	            // */
-	            //get(rowIndex, cellIndex) {
-	            //    let {width, height, data} = this[__PRIVATE];
-	            //    cellIndex = Math.min(cellIndex, width);
-	            //    cellIndex = Math.max(cellIndex, 0);
-	            //    rowIndex = Math.min(rowIndex, height);
-	            //    rowIndex = Math.max(rowIndex, 0);
-	            //    return data[rowIndex][cellIndex];
-	            //}
-	            ///**
-	            // * @returns {Number}
-	            // */
-	            //get width() {
-	            //    let {width} = this[__PRIVATE];
-	            //    return width;
-	            //}
-	            ///**
-	            // * @returns {Number}
-	            // */
-	            //get height() {
-	            //    let {height} = this[__PRIVATE];
-	            //    return height;
-	            //}
+	        destroy: {
 	            /**
-	             * @param {Function} cb
+	             *
 	             */
 	
-	            value: function forEach(cb) {
+	            value: function destroy() {
+	                var data = this[__PRIVATE].data;
+	
+	                data.length = 0;
+	            }
+	        },
+	        get: {
+	            /**
+	             * @param {Number} rowIndex
+	             * @param cellIndex
+	             * @returns {*}
+	             */
+	
+	            value: function get(rowIndex, cellIndex) {
 	                var _PRIVATE = this[__PRIVATE];
 	                var width = _PRIVATE.width;
 	                var height = _PRIVATE.height;
 	                var data = _PRIVATE.data;
 	
+	                //cellIndex = Math.min(cellIndex, width);
+	                //cellIndex = Math.max(cellIndex, 0);
+	                //rowIndex = Math.min(rowIndex, height);
+	                //rowIndex = Math.max(rowIndex, 0);
+	                return data[rowIndex][cellIndex];
+	            }
+	        },
+	        width: {
+	            /**
+	             * @returns {Number}
+	             */
+	
+	            get: function () {
+	                var width = this[__PRIVATE].width;
+	
+	                return width;
+	            }
+	        },
+	        height: {
+	            /**
+	             * @returns {Number}
+	             */
+	
+	            get: function () {
+	                var height = this[__PRIVATE].height;
+	
+	                return height;
+	            }
+	        },
+	        forEach: {
+	            /**
+	             * @param {Function} cb
+	             */
+	
+	            value: function forEach(cb) {
+	                var _ref = this;
+	
+	                var width = _ref.width;
+	                var height = _ref.height;
+	
 	                for (var i = 0; i < height; i++) {
 	                    for (var j = 0; j < width; j++) {
-	                        var cell = data[i][j];
+	                        var cell = this.get(i, j);
 	                        cb(cell);
 	                    }
 	                }
@@ -388,31 +414,30 @@
 	
 	            value: function toImageData() {
 	                var STEP = 4;
-	                var _PRIVATE = this[__PRIVATE];
-	                var width = _PRIVATE.width;
-	                var height = _PRIVATE.height;
-	                var data = _PRIVATE.data;
+	
+	                var _ref = this;
+	
+	                var width = _ref.width;
+	                var height = _ref.height;
 	
 	                var array = new Uint8ClampedArray(width * height * STEP);
 	                var c0 = 0; // counter
 	                var c1 = 1; // counter
 	                var c2 = 2; // counter
 	                var c3 = 3; // counter
-	                for (var i = 0; i < height; i++) {
-	                    for (var j = 0; j < width; j++) {
-	                        var cell = data[i][j];
-	                        var rgba = cell.rgba;
+	                var callback = function (cell) {
+	                    var rgba = cell.rgba;
 	
-	                        array[c0] = rgba[0];
-	                        array[c1] = rgba[1];
-	                        array[c2] = rgba[2];
-	                        array[c3] = rgba[3];
-	                        c0 += STEP;
-	                        c1 += STEP;
-	                        c2 += STEP;
-	                        c3 += STEP;
-	                    }
-	                }
+	                    array[c0] = rgba[0];
+	                    array[c1] = rgba[1];
+	                    array[c2] = rgba[2];
+	                    array[c3] = rgba[3];
+	                    c0 += STEP;
+	                    c1 += STEP;
+	                    c2 += STEP;
+	                    c3 += STEP;
+	                };
+	                this.forEach(callback);
 	                return new ImageData(array, width, height);
 	            }
 	        }
