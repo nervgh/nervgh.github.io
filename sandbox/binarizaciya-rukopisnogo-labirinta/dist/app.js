@@ -77,7 +77,7 @@
 	
 	var Reader = _interopRequire(__webpack_require__(2));
 	
-	var Writer = _interopRequire(__webpack_require__(6));
+	var Writer = _interopRequire(__webpack_require__(7));
 	
 	var Decoder = (function () {
 	    /**
@@ -227,15 +227,15 @@
 	
 	var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
 	
-	var _slicedToArray = function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { var _arr = []; for (var _iterator = arr[Symbol.iterator](), _step; !(_step = _iterator.next()).done;) { _arr.push(_step.value); if (i && _arr.length === i) break; } return _arr; } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } };
-	
 	var _createClass = (function () { function defineProperties(target, props) { for (var key in props) { var prop = props[key]; prop.configurable = true; if (prop.value) prop.writable = true; } Object.defineProperties(target, props); } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 	
 	var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
 	
 	var Cell = _interopRequire(__webpack_require__(4));
 	
-	var Vector2 = _interopRequire(__webpack_require__(5));
+	var Rgba = _interopRequire(__webpack_require__(5));
+	
+	var Vector2 = _interopRequire(__webpack_require__(6));
 	
 	var __PRIVATE = "__";
 	
@@ -333,18 +333,15 @@
 	                var half = full / 2;
 	                var modify = function (cell) {
 	                    var rgba = cell.rgba;
+	                    var red = rgba.red;
+	                    var green = rgba.green;
+	                    var blue = rgba.blue;
 	
-	                    var _rgba = _slicedToArray(rgba, 3);
-	
-	                    var r = _rgba[0];
-	                    var g = _rgba[1];
-	                    var b = _rgba[2];
-	
-	                    r = r < half ? 0 : full;
-	                    g = g < half ? 0 : full;
-	                    b = b < half ? 0 : full;
-	                    var color = r + g + b < full ? 0 : full;
-	                    rgba[0] = rgba[1] = rgba[2] = color;
+	                    red = red < half ? 0 : full;
+	                    green = green < half ? 0 : full;
+	                    blue = blue < half ? 0 : full;
+	                    var color = red + green + blue < full ? 0 : full;
+	                    rgba.red = rgba.green = rgba.blue = color;
 	                };
 	                this.forEach(modify);
 	            }
@@ -358,16 +355,13 @@
 	                var MAX = 255;
 	                var modify = function (cell) {
 	                    var rgba = cell.rgba;
+	                    var red = rgba.red;
+	                    var green = rgba.green;
+	                    var blue = rgba.blue;
 	
-	                    var _rgba = _slicedToArray(rgba, 3);
-	
-	                    var r = _rgba[0];
-	                    var g = _rgba[1];
-	                    var b = _rgba[2];
-	
-	                    rgba[0] = MAX - r;
-	                    rgba[1] = MAX - g;
-	                    rgba[2] = MAX - b;
+	                    rgba.red = MAX - red;
+	                    rgba.green = MAX - green;
+	                    rgba.blue = MAX - blue;
 	                };
 	                this.forEach(modify);
 	            }
@@ -385,15 +379,12 @@
 	                var B = 0.114;
 	                var modify = function (cell) {
 	                    var rgba = cell.rgba;
+	                    var red = rgba.red;
+	                    var green = rgba.green;
+	                    var blue = rgba.blue;
 	
-	                    var _rgba = _slicedToArray(rgba, 3);
-	
-	                    var r = _rgba[0];
-	                    var g = _rgba[1];
-	                    var b = _rgba[2];
-	
-	                    var grey = Math.round(r * R + g * G + b * B);
-	                    rgba[0] = rgba[1] = rgba[2] = grey;
+	                    var grey = Math.round(red * R + green * G + blue * B);
+	                    rgba.red = rgba.green = rgba.blue = grey;
 	                };
 	                this.forEach(modify);
 	            }
@@ -418,11 +409,15 @@
 	                var c3 = 3; // counter
 	                var callback = function (cell) {
 	                    var rgba = cell.rgba;
+	                    var red = rgba.red;
+	                    var green = rgba.green;
+	                    var blue = rgba.blue;
+	                    var alpha = rgba.alpha;
 	
-	                    array[c0] = rgba[0];
-	                    array[c1] = rgba[1];
-	                    array[c2] = rgba[2];
-	                    array[c3] = rgba[3];
+	                    array[c0] = red;
+	                    array[c1] = green;
+	                    array[c2] = blue;
+	                    array[c3] = alpha;
 	                    c0 += STEP;
 	                    c1 += STEP;
 	                    c2 += STEP;
@@ -454,7 +449,7 @@
 	                for (var i = 0; i < height; i++) {
 	                    var cells = new Array(width);
 	                    for (var j = 0; j < width; j++) {
-	                        var rgba = [data[c0], data[c1], data[c2], data[c3]];
+	                        var rgba = new Rgba(data[c0], data[c1], data[c2], data[c3]);
 	                        var vector = new Vector2(i, j);
 	                        cells[j] = new Cell(rgba, vector);
 	                        c0 += STEP;
@@ -498,7 +493,7 @@
 	
 	var Cell =
 	/**
-	 * @param {Object} rgba
+	 * @param {Rgba} rgba
 	 * @param {Vector2} vector
 	 */
 	function Cell(rgba, vector) {
@@ -520,6 +515,62 @@
 	
 	var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
 	
+	var Rgba = (function () {
+	    /**
+	     * @param {Number} red
+	     * @param {Number} green
+	     * @param {Number} blue
+	     * @param {Number} alpha
+	     */
+	
+	    function Rgba() {
+	        var red = arguments[0] === undefined ? 255 : arguments[0];
+	        var green = arguments[1] === undefined ? 255 : arguments[1];
+	        var blue = arguments[2] === undefined ? 255 : arguments[2];
+	        var alpha = arguments[3] === undefined ? 255 : arguments[3];
+	
+	        _classCallCheck(this, Rgba);
+	
+	        this.red = red;
+	        this.green = green;
+	        this.blue = blue;
+	        this.alpha = alpha;
+	    }
+	
+	    _createClass(Rgba, {
+	        clone: {
+	            /**
+	             * @returns {Rgba}
+	             */
+	
+	            value: function clone() {
+	                var _ref = this;
+	
+	                var red = _ref.red;
+	                var green = _ref.green;
+	                var blue = _ref.blue;
+	                var alpha = _ref.alpha;
+	
+	                return new Rgba(red, green, blue, alpha);
+	            }
+	        }
+	    });
+	
+	    return Rgba;
+	})();
+	
+	module.exports = Rgba;
+
+/***/ },
+/* 6 */
+/***/ function(module, exports) {
+
+	"use strict";
+	
+	var _createClass = (function () { function defineProperties(target, props) { for (var key in props) { var prop = props[key]; prop.configurable = true; if (prop.value) prop.writable = true; } Object.defineProperties(target, props); } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+	
+	var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
+	
 	var Vector2 = (function () {
 	    /**
 	     * @param {Number} x
@@ -532,8 +583,8 @@
 	
 	        _classCallCheck(this, Vector2);
 	
-	        this[0] = x;
-	        this[1] = y;
+	        this.x = x;
+	        this.y = y;
 	    }
 	
 	    _createClass(Vector2, {
@@ -543,7 +594,12 @@
 	             */
 	
 	            value: function clone() {
-	                return new Vector2(this[0], this[1]);
+	                var _ref = this;
+	
+	                var x = _ref.x;
+	                var y = _ref.y;
+	
+	                return new Vector2(x, y);
 	            }
 	        }
 	    });
@@ -554,7 +610,7 @@
 	module.exports = Vector2;
 
 /***/ },
-/* 6 */
+/* 7 */
 /***/ function(module, exports) {
 
 	"use strict";

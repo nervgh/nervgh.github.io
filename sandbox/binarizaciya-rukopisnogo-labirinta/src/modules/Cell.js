@@ -3,7 +3,7 @@
 
 export default class Cell {
     /**
-     * @param {Object} rgba
+     * @param {Rgba} rgba
      * @param {Vector2} vector
      */
     constructor(rgba, vector) {

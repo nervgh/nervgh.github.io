@@ -2,6 +2,7 @@
 
 
 import Cell from './Cell';
+import Rgba from './Rgba';
 import Vector2 from './Vector2';
 
 
@@ -69,12 +70,12 @@ export default class Matrix {
         const half = full / 2;
         let modify = (cell) => {
             let {rgba} = cell;
-            let [r, g, b] = rgba;
-            r = r < half ? 0 : full;
-            g = g < half ? 0 : full;
-            b = b < half ? 0 : full;
-            let color = (r + g + b) < full ? 0 : full;
-            rgba[0] = rgba[1] = rgba[2] = color;
+            let {red, green, blue} = rgba;
+            red = red < half ? 0 : full;
+            green = green < half ? 0 : full;
+            blue = blue < half ? 0 : full;
+            let color = (red + green + blue) < full ? 0 : full;
+            rgba.red = rgba.green = rgba.blue = color;
         };
         this.forEach(modify);
     }
@@ -85,10 +86,10 @@ export default class Matrix {
         const MAX = 255;
         let modify = (cell) => {
             let {rgba} = cell;
-            let [r, g, b] = rgba;
-            rgba[0] = MAX - r;
-            rgba[1] = MAX - g;
-            rgba[2] = MAX - b;
+            let {red, green, blue} = rgba;
+            rgba.red = MAX - red;
+            rgba.green = MAX - green;
+            rgba.blue = MAX - blue;
         };
         this.forEach(modify);
     }
@@ -103,9 +104,9 @@ export default class Matrix {
         const B = 0.114;
         let modify = (cell) => {
             let {rgba} = cell;
-            let [r, g, b] = rgba;
-            let grey = Math.round(r * R + g * G + b * B);
-            rgba[0] = rgba[1] = rgba[2] = grey;
+            let {red, green, blue} = rgba;
+            let grey = Math.round(red * R + green * G + blue * B);
+            rgba.red = rgba.green = rgba.blue = grey;
         };
         this.forEach(modify);
     }
@@ -122,10 +123,11 @@ export default class Matrix {
         let c3 = 3; // counter
         let callback = (cell) => {
             let {rgba} = cell;
-            array[c0] = rgba[0];
-            array[c1] = rgba[1];
-            array[c2] = rgba[2];
-            array[c3] = rgba[3];
+            let {red, green, blue, alpha} = rgba;
+            array[c0] = red;
+            array[c1] = green;
+            array[c2] = blue;
+            array[c3] = alpha;
             c0 += STEP;
             c1 += STEP;
             c2 += STEP;
@@ -150,7 +152,7 @@ export default class Matrix {
         for(let i = 0; i < height; i++) {
             let cells = new Array(width);
             for(let j = 0; j < width; j++) {
-                let rgba = [data[c0], data[c1], data[c2], data[c3]];
+                let rgba = new Rgba(data[c0], data[c1], data[c2], data[c3]);
                 let vector = new Vector2(i, j);
                 cells[j] = new Cell(rgba, vector);
                 c0 += STEP;
