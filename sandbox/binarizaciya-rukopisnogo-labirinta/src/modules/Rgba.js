@@ -1,3 +1,4 @@
+'use strict';
 
 
 export default class Rgba {
@@ -12,6 +13,33 @@ export default class Rgba {
         this.green = green;
         this.blue = blue;
         this.alpha = alpha;
+    }
+    /**
+     * @returns {Boolean}
+     */
+    isBlack() {
+        const color = 0;
+        return this.is(color, color, color);
+    }
+    /**
+     * @returns {Boolean}
+     */
+    isWhite() {
+        const color = 255;
+        return this.is(color, color, color);
+    }
+    /**
+     * @param {Number} red
+     * @param {Number} green
+     * @param {Number} blue
+     * @param {Number} alpha
+     * @returns {Boolean}
+     */
+    is(red = 255, green = 255, blue = 255, alpha = 255) {
+        return this.red === red &&
+                    this.green === green &&
+                    this.blue === blue &&
+                    this.alpha === alpha;
     }
     /**
      * @returns {Rgba}

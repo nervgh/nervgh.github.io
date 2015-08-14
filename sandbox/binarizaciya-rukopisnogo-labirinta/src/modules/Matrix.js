@@ -4,60 +4,48 @@
 import Cell from './Cell';
 import Rgba from './Rgba';
 import Vector2 from './Vector2';
-
-
-const __PRIVATE = '__';
+import MatrixWalker from './MatrixWalker';
 
 
 export default class Matrix {
     /**
-     * @param {*} data
+     * @param {*} any
      */
-    constructor(data) {
-        this[__PRIVATE] = Matrix.factory(data);
+    constructor(any) {
+        let {width, height, data} = Matrix.factory(any);
+        this.width = width;
+        this.height = height;
+        this.data = data;
     }
     /**
      *
      */
     destroy() {
-        let {data} = this[__PRIVATE];
+        let {data} = this;
         data.length = 0;
     }
     /**
-     * @param {Number} rowIndex
-     * @param cellIndex
-     * @returns {*}
+     * @returns {Matrix}
      */
-    get(rowIndex, cellIndex) {
-        let {width, height, data} = this[__PRIVATE];
-        //cellIndex = Math.min(cellIndex, width);
-        //cellIndex = Math.max(cellIndex, 0);
-        //rowIndex = Math.min(rowIndex, height);
-        //rowIndex = Math.max(rowIndex, 0);
-        return data[rowIndex][cellIndex];
+    clone() {
+        return new Matrix(this);
     }
     /**
-     * @returns {Number}
+     * @param {Cell} [cell]
+     * @returns {MatrixWalker}
      */
-    get width() {
-        let {width} = this[__PRIVATE];
-        return width;
-    }
-    /**
-     * @returns {Number}
-     */
-    get height() {
-        let {height} = this[__PRIVATE];
-        return height;
+    createWalker(cell = this.data[0][0]) {
+        let {vector} = cell;
+        return new MatrixWalker(this, vector.clone());
     }
     /**
      * @param {Function} cb
      */
     forEach(cb) {
-        let {width, height} = this;
+        let {width, height, data} = this;
         for(let i = 0; i < height; i++) {
             for(let j = 0; j < width; j++) {
-                let cell = this.get(i, j);
+                let cell = data[i][j];
                 cb(cell);
             }
         }
@@ -137,6 +125,20 @@ export default class Matrix {
         return new ImageData(array, width, height);
     }
     /**
+     * @returns {Array}
+     */
+    toArray() {
+        let {width, height} = this;
+        let array = new Array(width * height);
+        let counter = 0;
+        let callback = (cell) => {
+            array[counter] = cell;
+            counter += 1;
+        };
+        this.forEach(callback);
+        return array;
+    }
+    /**
      * @see https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Pixel_manipulation_with_canvas
      * @param {ImageData} imageData
      * @returns {Object}
@@ -169,10 +171,38 @@ export default class Matrix {
         };
     }
     /**
+     * @param {Matrix} matrix
+     * @returns {Object}
+     */
+    static fromMatrix(matrix) {
+        let {width, height, data} = matrix;
+        let rows = new Array(height);
+        for(let i = 0; i < height; i++) {
+            let row = new Array(width);
+            for(let j = 0; j < width; j++) {
+                let cell = data[i][j];
+                row[j] = cell.clone();
+            }
+            rows[i] = row;
+        }
+        return {
+            width,
+            height,
+            data: rows
+        };
+    }
+    /**
      * @param {*} data
      * @returns {*}
      */
     static factory(data) {
-        return Matrix.fromImageData(data);
+        if (data instanceof ImageData) {
+            return Matrix.fromImageData(data);
+        } else if (data instanceof Matrix) {
+            return Matrix.fromMatrix(data);
+        } else {
+            throw new TypeError(`This type not supported.
+            Matrix may be created only from {ImageData} or another {Matrix}.`);
+        }
     }
 }

@@ -17,7 +17,9 @@ export default class Reader {
      * @param {HTMLImageElement} image
      */
     readAsMatrix(image) {
-        image.addEventListener('load', this.__readAsMatrix.bind(this, image));
+        let temp = new Image();
+        temp.onload = this.__readAsMatrix.bind(this, image);
+        temp.src = image.src;
     }
     /**
      * @param {HTMLImageElement} elementImage

@@ -77,7 +77,10 @@
 	
 	var Reader = _interopRequire(__webpack_require__(2));
 	
-	var Writer = _interopRequire(__webpack_require__(7));
+	var Writer = _interopRequire(__webpack_require__(8));
+	
+	//import {randomItems} from './utils';
+	//import Rectangle from './Rectangle';
 	
 	var Decoder = (function () {
 	    /**
@@ -89,7 +92,8 @@
 	
 	        this.reader = new Reader();
 	        this.writer = new Writer();
-	        this.matrix = null;
+	        //this.__matrix = undefined;
+	        //this.__pointerSize = undefined;
 	        this.reader.onReadComplete = this.__onReadComplete.bind(this);
 	    }
 	
@@ -119,9 +123,35 @@
 	
 	            value: function __onReadComplete(image, matrix) {
 	                matrix.normalize();
-	                this.matrix = matrix;
+	                //this.__matrix = matrix;
+	                //this.__pointerSize = this.__getPointerSize(matrix);
 	                this.onDecodeComplete(matrix);
 	            }
+	            //__getPointerSize(matrix) {
+	            //    let blackCells = this.__getBlackCells(matrix);
+	            //    let randomCells = randomItems(blackCells, 10);
+	            //}
+	            ///**
+	            // * @param {Matrix} matrix
+	            // * @returns {Array<Cell>}
+	            // * @private
+	            // */
+	            //__getBlackCells(matrix) {
+	            //    let array = matrix.toArray();
+	            //    return array.filter(cell => cell.isBlack());
+	            //}
+	            //__expandCell(matrix, cell) {
+	            //    let {width, height} = matrix;
+	            //    let limit = Math.min(width, height) >> 4;
+	            //    let {vector} = cell;
+	            //    let rectangle = new Rectangle(vector.clone(), vector.clone(),
+	            //                                                vector.clone(), vector.clone());
+	            //    let pointer = cell;
+	            //    while(pointer.vector.y !== 0) {
+	            //
+	            //    }
+	            //}
+	
 	        }
 	    });
 	
@@ -162,7 +192,9 @@
 	       */
 	
 	      value: function readAsMatrix(image) {
-	        image.addEventListener("load", this.__readAsMatrix.bind(this, image));
+	        var temp = new Image();
+	        temp.onload = this.__readAsMatrix.bind(this, image);
+	        temp.src = image.src;
 	      }
 	    },
 	    __readAsMatrix: {
@@ -237,17 +269,25 @@
 	
 	var Vector2 = _interopRequire(__webpack_require__(6));
 	
-	var __PRIVATE = "__";
+	var MatrixWalker = _interopRequire(__webpack_require__(7));
 	
 	var Matrix = (function () {
 	    /**
-	     * @param {*} data
+	     * @param {*} any
 	     */
 	
-	    function Matrix(data) {
+	    function Matrix(any) {
 	        _classCallCheck(this, Matrix);
 	
-	        this[__PRIVATE] = Matrix.factory(data);
+	        var _Matrix$factory = Matrix.factory(any);
+	
+	        var width = _Matrix$factory.width;
+	        var height = _Matrix$factory.height;
+	        var data = _Matrix$factory.data;
+	
+	        this.width = width;
+	        this.height = height;
+	        this.data = data;
 	    }
 	
 	    _createClass(Matrix, {
@@ -257,51 +297,33 @@
 	             */
 	
 	            value: function destroy() {
-	                var data = this[__PRIVATE].data;
+	                var _ref = this;
+	
+	                var data = _ref.data;
 	
 	                data.length = 0;
 	            }
 	        },
-	        get: {
+	        clone: {
 	            /**
-	             * @param {Number} rowIndex
-	             * @param cellIndex
-	             * @returns {*}
+	             * @returns {Matrix}
 	             */
 	
-	            value: function get(rowIndex, cellIndex) {
-	                var _PRIVATE = this[__PRIVATE];
-	                var width = _PRIVATE.width;
-	                var height = _PRIVATE.height;
-	                var data = _PRIVATE.data;
-	
-	                //cellIndex = Math.min(cellIndex, width);
-	                //cellIndex = Math.max(cellIndex, 0);
-	                //rowIndex = Math.min(rowIndex, height);
-	                //rowIndex = Math.max(rowIndex, 0);
-	                return data[rowIndex][cellIndex];
+	            value: function clone() {
+	                return new Matrix(this);
 	            }
 	        },
-	        width: {
+	        createWalker: {
 	            /**
-	             * @returns {Number}
+	             * @param {Cell} [cell]
+	             * @returns {MatrixWalker}
 	             */
 	
-	            get: function () {
-	                var width = this[__PRIVATE].width;
+	            value: function createWalker() {
+	                var cell = arguments[0] === undefined ? this.data[0][0] : arguments[0];
+	                var vector = cell.vector;
 	
-	                return width;
-	            }
-	        },
-	        height: {
-	            /**
-	             * @returns {Number}
-	             */
-	
-	            get: function () {
-	                var height = this[__PRIVATE].height;
-	
-	                return height;
+	                return new MatrixWalker(this, vector.clone());
 	            }
 	        },
 	        forEach: {
@@ -314,10 +336,11 @@
 	
 	                var width = _ref.width;
 	                var height = _ref.height;
+	                var data = _ref.data;
 	
 	                for (var i = 0; i < height; i++) {
 	                    for (var j = 0; j < width; j++) {
-	                        var cell = this.get(i, j);
+	                        var cell = data[i][j];
 	                        cb(cell);
 	                    }
 	                }
@@ -426,6 +449,27 @@
 	                this.forEach(callback);
 	                return new ImageData(array, width, height);
 	            }
+	        },
+	        toArray: {
+	            /**
+	             * @returns {Array}
+	             */
+	
+	            value: function toArray() {
+	                var _ref = this;
+	
+	                var width = _ref.width;
+	                var height = _ref.height;
+	
+	                var array = new Array(width * height);
+	                var counter = 0;
+	                var callback = function (cell) {
+	                    array[counter] = cell;
+	                    counter += 1;
+	                };
+	                this.forEach(callback);
+	                return array;
+	            }
 	        }
 	    }, {
 	        fromImageData: {
@@ -466,6 +510,33 @@
 	                };
 	            }
 	        },
+	        fromMatrix: {
+	            /**
+	             * @param {Matrix} matrix
+	             * @returns {Object}
+	             */
+	
+	            value: function fromMatrix(matrix) {
+	                var width = matrix.width;
+	                var height = matrix.height;
+	                var data = matrix.data;
+	
+	                var rows = new Array(height);
+	                for (var i = 0; i < height; i++) {
+	                    var row = new Array(width);
+	                    for (var j = 0; j < width; j++) {
+	                        var cell = data[i][j];
+	                        row[j] = cell.clone();
+	                    }
+	                    rows[i] = row;
+	                }
+	                return {
+	                    width: width,
+	                    height: height,
+	                    data: rows
+	                };
+	            }
+	        },
 	        factory: {
 	            /**
 	             * @param {*} data
@@ -473,7 +544,13 @@
 	             */
 	
 	            value: function factory(data) {
-	                return Matrix.fromImageData(data);
+	                if (data instanceof ImageData) {
+	                    return Matrix.fromImageData(data);
+	                } else if (data instanceof Matrix) {
+	                    return Matrix.fromMatrix(data);
+	                } else {
+	                    throw new TypeError("This type not supported.\n            Matrix may be created only from {ImageData} or another {Matrix}.");
+	                }
 	            }
 	        }
 	    });
@@ -489,19 +566,42 @@
 
 	"use strict";
 	
+	var _createClass = (function () { function defineProperties(target, props) { for (var key in props) { var prop = props[key]; prop.configurable = true; if (prop.value) prop.writable = true; } Object.defineProperties(target, props); } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+	
 	var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
 	
-	var Cell =
-	/**
-	 * @param {Rgba} rgba
-	 * @param {Vector2} vector
-	 */
-	function Cell(rgba, vector) {
-	    _classCallCheck(this, Cell);
+	var Cell = (function () {
+	    /**
+	     * @param {Rgba} rgba
+	     * @param {Vector2} vector
+	     */
 	
-	    this.rgba = rgba;
-	    this.vector = vector;
-	};
+	    function Cell(rgba, vector) {
+	        _classCallCheck(this, Cell);
+	
+	        this.rgba = rgba;
+	        this.vector = vector;
+	    }
+	
+	    _createClass(Cell, {
+	        clone: {
+	            /**
+	             * @returns {Cell}
+	             */
+	
+	            value: function clone() {
+	                var _ref = this;
+	
+	                var rgba = _ref.rgba;
+	                var vector = _ref.vector;
+	
+	                return new Cell(rgba.clone(), vector.clone());
+	            }
+	        }
+	    });
+	
+	    return Cell;
+	})();
 	
 	module.exports = Cell;
 
@@ -538,6 +638,44 @@
 	    }
 	
 	    _createClass(Rgba, {
+	        isBlack: {
+	            /**
+	             * @returns {Boolean}
+	             */
+	
+	            value: function isBlack() {
+	                var color = 0;
+	                return this.is(color, color, color);
+	            }
+	        },
+	        isWhite: {
+	            /**
+	             * @returns {Boolean}
+	             */
+	
+	            value: function isWhite() {
+	                var color = 255;
+	                return this.is(color, color, color);
+	            }
+	        },
+	        is: {
+	            /**
+	             * @param {Number} red
+	             * @param {Number} green
+	             * @param {Number} blue
+	             * @param {Number} alpha
+	             * @returns {Boolean}
+	             */
+	
+	            value: function is() {
+	                var red = arguments[0] === undefined ? 255 : arguments[0];
+	                var green = arguments[1] === undefined ? 255 : arguments[1];
+	                var blue = arguments[2] === undefined ? 255 : arguments[2];
+	                var alpha = arguments[3] === undefined ? 255 : arguments[3];
+	
+	                return this.red === red && this.green === green && this.blue === blue && this.alpha === alpha;
+	            }
+	        },
 	        clone: {
 	            /**
 	             * @returns {Rgba}
@@ -611,6 +749,168 @@
 
 /***/ },
 /* 7 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	
+	var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
+	
+	var _createClass = (function () { function defineProperties(target, props) { for (var key in props) { var prop = props[key]; prop.configurable = true; if (prop.value) prop.writable = true; } Object.defineProperties(target, props); } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+	
+	var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
+	
+	var Vector2 = _interopRequire(__webpack_require__(6));
+	
+	var MatrixWalker = (function () {
+	    /**
+	     * @param {Matrix} matrix
+	     * @param {Vector2} [vector]
+	     */
+	
+	    function MatrixWalker(matrix) {
+	        var vector = arguments[1] === undefined ? new Vector2() : arguments[1];
+	
+	        _classCallCheck(this, MatrixWalker);
+	
+	        this.__matrix = matrix;
+	        this.__vector = vector;
+	    }
+	
+	    _createClass(MatrixWalker, {
+	        matrix: {
+	            /**
+	             * @returns {Matrix}
+	             */
+	
+	            get: function () {
+	                return this.__matrix;
+	            }
+	        },
+	        vector: {
+	            /**
+	             * @returns {Vector2}
+	             */
+	
+	            get: function () {
+	                return this.__vector;
+	            }
+	        },
+	        moveUp: {
+	            /**
+	             *
+	             */
+	
+	            value: function moveUp() {
+	                var _ref = this;
+	
+	                var vector = _ref.vector;
+	                var y = vector.y;
+	
+	                vector.y = this.__fixY(y - 1);
+	            }
+	        },
+	        moveRight: {
+	            /**
+	             *
+	             */
+	
+	            value: function moveRight() {
+	                var _ref = this;
+	
+	                var vector = _ref.vector;
+	                var x = vector.x;
+	
+	                vector.x = this.__fixX(x + 1);
+	            }
+	        },
+	        moveDown: {
+	            /**
+	             *
+	             */
+	
+	            value: function moveDown() {
+	                var _ref = this;
+	
+	                var vector = _ref.vector;
+	                var y = vector.y;
+	
+	                vector.y = this.__fixY(y - 1);
+	            }
+	        },
+	        moveLeft: {
+	            /**
+	             *
+	             */
+	
+	            value: function moveLeft() {
+	                var _ref = this;
+	
+	                var vector = _ref.vector;
+	                var x = vector.x;
+	
+	                vector.x = this.__fixX(x - 1);
+	            }
+	        },
+	        jumpTo: {
+	            /**
+	             * @param {Number} x
+	             * @param {Number} y
+	             */
+	
+	            value: function jumpTo(x, y) {
+	                var _ref = this;
+	
+	                var vector = _ref.vector;
+	
+	                vector.x = this.__fixX(x);
+	                vector.y = this.__fixY(y);
+	            }
+	        },
+	        __fixX: {
+	            /**
+	             * @param {Number} x
+	             * @returns {Number}
+	             * @private
+	             */
+	
+	            value: function __fixX(x) {
+	                var _ref = this;
+	
+	                var matrix = _ref.matrix;
+	                var width = matrix.width;
+	
+	                x = Math.min(x, width);
+	                x = Math.max(x, 0);
+	                return x;
+	            }
+	        },
+	        __fixY: {
+	            /**
+	             * @param {Number} y
+	             * @returns {Number}
+	             * @private
+	             */
+	
+	            value: function __fixY(y) {
+	                var _ref = this;
+	
+	                var matrix = _ref.matrix;
+	                var height = matrix.height;
+	
+	                y = Math.min(y, height);
+	                y = Math.max(y, 0);
+	                return y;
+	            }
+	        }
+	    });
+	
+	    return MatrixWalker;
+	})();
+	
+	module.exports = MatrixWalker;
+
+/***/ },
+/* 8 */
 /***/ function(module, exports) {
 
 	"use strict";

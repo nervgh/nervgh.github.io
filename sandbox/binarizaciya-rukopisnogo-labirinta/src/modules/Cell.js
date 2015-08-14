@@ -10,4 +10,11 @@ export default class Cell {
         this.rgba = rgba;
         this.vector = vector;
     }
+    /**
+     * @returns {Cell}
+     */
+    clone() {
+        let {rgba, vector} = this;
+        return new Cell(rgba.clone(), vector.clone());
+    }
 }
