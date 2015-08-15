@@ -2,6 +2,7 @@
 
 
 import Vector2 from './Vector2';
+import {noOperation} from './utils';
 
 
 export default class MatrixWalker {
@@ -26,45 +27,49 @@ export default class MatrixWalker {
         return this.__vector;
     }
     /**
-     *
+     * @param {Function} [preventStep]
      */
-    moveUp() {
+    moveUp(preventStep = noOperation) {
         let {vector} = this;
-        let {y} = vector;
-        vector.y = this.__fixY(y - 1);
+        let {x, y} = vector;
+        this.jumpTo(x, y - 1, preventStep);
     }
     /**
-     *
+     * @param {Function} [preventStep]
      */
-    moveRight() {
+    moveRight(preventStep = noOperation) {
         let {vector} = this;
-        let {x} = vector;
-        vector.x = this.__fixX(x + 1);
+        let {x, y} = vector;
+        this.jumpTo(x + 1, y, preventStep);
     }
     /**
-     *
+     * @param {Function} [preventStep]
      */
-    moveDown() {
+    moveDown(preventStep = noOperation) {
         let {vector} = this;
-        let {y} = vector;
-        vector.y = this.__fixY(y - 1);
+        let {x, y} = vector;
+        this.jumpTo(x, y + 1, preventStep);
     }
     /**
-     *
+     * @param {Function} [preventStep]
      */
-    moveLeft() {
+    moveLeft(preventStep = noOperation) {
         let {vector} = this;
-        let {x} = vector;
-        vector.x = this.__fixX(x - 1);
+        let {x, y} = vector;
+        this.jumpTo(x - 1, y, preventStep);
     }
     /**
      * @param {Number} x
      * @param {Number} y
+     * @param {Function} [preventStep]
      */
-    jumpTo(x, y) {
+    jumpTo(x, y, preventStep = noOperation) {
         let {vector} = this;
-        vector.x = this.__fixX(x);
-        vector.y = this.__fixY(y);
+        x = this.__fixX(x);
+        y = this.__fixY(y);
+        if (this.__testPrevent(x, y, preventStep)) return;
+        vector.x = x;
+        vector.y = y;
     }
     /**
      * @param {Number} x
@@ -74,7 +79,7 @@ export default class MatrixWalker {
     __fixX(x) {
         let {matrix} = this;
         let {width} = matrix;
-        x = Math.min(x, width);
+        x = Math.min(x, width - 1);
         x = Math.max(x, 0);
         return x;
     }
@@ -86,9 +91,21 @@ export default class MatrixWalker {
     __fixY(y) {
         let {matrix} = this;
         let {height} = matrix;
-        y = Math.min(y, height);
+        y = Math.min(y, height - 1);
         y = Math.max(y, 0);
         return y;
+    }
+    /**
+     * @param {Number} x
+     * @param {Number} y
+     * @param {Function} preventFunction
+     * @returns {*}
+     * @private
+     */
+    __testPrevent(x, y, preventFunction) {
+        let {matrix} = this;
+        let cell = matrix.getCellByCoordinates(x, y);
+        return preventFunction(cell);
     }
 }
 

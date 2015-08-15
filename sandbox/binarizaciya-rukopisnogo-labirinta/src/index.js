@@ -10,9 +10,9 @@ let stage = document.getElementById('stage');
 
 let decoder = new Decoder();
 
-decoder.onDecodeComplete = function(matrix) {
+decoder.onDecodeComplete = function(matrix, pointerSize) {
+    console.log('pointerSize', pointerSize);
     decoder.writer.writeAsCanvas(matrix, stage);
 };
-
 
 decoder.decode(image);

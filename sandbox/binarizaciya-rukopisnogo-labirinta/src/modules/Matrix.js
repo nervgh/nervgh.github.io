@@ -39,12 +39,43 @@ export default class Matrix {
         return new MatrixWalker(this, vector.clone());
     }
     /**
+     * @param {Number} x
+     * @param {Number} y
+     * @returns {Cell}
+     */
+    getCellByCoordinates(x, y) {
+        let {data} = this;
+        return data[y][x];
+    }
+    /**
+     * @param {Vector2} vector
+     * @returns {*}
+     */
+    getCellByVector(vector) {
+        let {x, y} = vector;
+        return this.getCellByCoordinates(x, y);
+    }
+    /**
      * @param {Function} cb
      */
     forEach(cb) {
         let {width, height, data} = this;
         for(let i = 0; i < height; i++) {
             for(let j = 0; j < width; j++) {
+                let cell = data[i][j];
+                cb(cell);
+            }
+        }
+    }
+    /**
+     * @param {Rectangle} rectangle
+     * @param {Function} cb
+     */
+    forEachRectangle(rectangle, cb) {
+        let {top, right, bottom, left} = rectangle;
+        let {data} = this;
+        for(let i = top.y; i <= bottom.y; i++) {
+            for(let j = left.x; j <= right.x; j++) {
                 let cell = data[i][j];
                 cb(cell);
             }
@@ -155,7 +186,7 @@ export default class Matrix {
             let cells = new Array(width);
             for(let j = 0; j < width; j++) {
                 let rgba = new Rgba(data[c0], data[c1], data[c2], data[c3]);
-                let vector = new Vector2(i, j);
+                let vector = new Vector2(j, i);
                 cells[j] = new Cell(rgba, vector);
                 c0 += STEP;
                 c1 += STEP;

@@ -57,7 +57,8 @@
 	
 	var decoder = new Decoder();
 	
-	decoder.onDecodeComplete = function (matrix) {
+	decoder.onDecodeComplete = function (matrix, pointerSize) {
+	    console.log("pointerSize", pointerSize);
 	    decoder.writer.writeAsCanvas(matrix, stage);
 	};
 	
@@ -77,10 +78,11 @@
 	
 	var Reader = _interopRequire(__webpack_require__(2));
 	
-	var Writer = _interopRequire(__webpack_require__(8));
+	var Writer = _interopRequire(__webpack_require__(9));
 	
-	//import {randomItems} from './utils';
-	//import Rectangle from './Rectangle';
+	var randomItems = __webpack_require__(8).randomItems;
+	
+	var Rectangle = _interopRequire(__webpack_require__(10));
 	
 	var Decoder = (function () {
 	    /**
@@ -92,12 +94,21 @@
 	
 	        this.reader = new Reader();
 	        this.writer = new Writer();
-	        //this.__matrix = undefined;
-	        //this.__pointerSize = undefined;
 	        this.reader.onReadComplete = this.__onReadComplete.bind(this);
+	        this.__matrix = undefined;
+	        this.__pointerSize = undefined;
 	    }
 	
 	    _createClass(Decoder, {
+	        pointerSize: {
+	            /**
+	             * @returns {Number}
+	             */
+	
+	            get: function () {
+	                return this.__pointerSize;
+	            }
+	        },
 	        decode: {
 	            /**
 	             * @param {HTMLImageElement} image
@@ -110,9 +121,11 @@
 	        onDecodeComplete: {
 	            /**
 	             * Callback
+	             * @param {Matrix} matrix
+	             * @param {Number} pointerSize
 	             */
 	
-	            value: function onDecodeComplete() {}
+	            value: function onDecodeComplete(matrix, pointerSize) {}
 	        },
 	        __onReadComplete: {
 	            /**
@@ -123,35 +136,85 @@
 	
 	            value: function __onReadComplete(image, matrix) {
 	                matrix.normalize();
-	                //this.__matrix = matrix;
-	                //this.__pointerSize = this.__getPointerSize(matrix);
-	                this.onDecodeComplete(matrix);
+	                var pointerSize = this.__getPointerSize(matrix);
+	                this.__matrix = matrix;
+	                this.__pointerSize = pointerSize;
+	                this.onDecodeComplete(matrix, pointerSize);
 	            }
-	            //__getPointerSize(matrix) {
-	            //    let blackCells = this.__getBlackCells(matrix);
-	            //    let randomCells = randomItems(blackCells, 10);
-	            //}
-	            ///**
-	            // * @param {Matrix} matrix
-	            // * @returns {Array<Cell>}
-	            // * @private
-	            // */
-	            //__getBlackCells(matrix) {
-	            //    let array = matrix.toArray();
-	            //    return array.filter(cell => cell.isBlack());
-	            //}
-	            //__expandCell(matrix, cell) {
-	            //    let {width, height} = matrix;
-	            //    let limit = Math.min(width, height) >> 4;
-	            //    let {vector} = cell;
-	            //    let rectangle = new Rectangle(vector.clone(), vector.clone(),
-	            //                                                vector.clone(), vector.clone());
-	            //    let pointer = cell;
-	            //    while(pointer.vector.y !== 0) {
-	            //
-	            //    }
-	            //}
+	        },
+	        __getPointerSize: {
+	            /**
+	             * @param {Matrix} matrix
+	             * @returns {Number}
+	             * @private
+	             */
 	
+	            value: function __getPointerSize(matrix) {
+	                var _this = this;
+	
+	                var blackCells = matrix.toArray().filter(function (cell) {
+	                    return cell.rgba.isBlack();
+	                });
+	                var randomCells = randomItems(blackCells, Math.floor(blackCells.length * 0.01));
+	                var rectangles = randomCells.map(function (cell) {
+	                    return _this.__expandCell(matrix, cell);
+	                });
+	
+	                var sizes = [];
+	
+	                rectangles.forEach(function (rectangle) {
+	                    var width = rectangle.width;
+	                    var height = rectangle.height;
+	
+	                    sizes.push(width, height);
+	                });
+	
+	                sizes.sort(function (a, b) {
+	                    return a - b;
+	                });
+	                sizes = sizes.filter(function (value) {
+	                    return value > 0;
+	                });
+	
+	                var middle = Math.floor(sizes.length / 3);
+	
+	                return sizes[middle];
+	            }
+	        },
+	        __expandCell: {
+	            /**
+	             * @param {Matrix} matrix
+	             * @param {Cell} cell
+	             * @returns {Rectangle}
+	             * @private
+	             */
+	
+	            value: function __expandCell(matrix, cell) {
+	                var width = matrix.width;
+	                var height = matrix.height;
+	
+	                var limit = Math.min(width, height) >> 4;
+	
+	                var walker1 = matrix.createWalker(cell);
+	                var walker2 = matrix.createWalker(cell);
+	                var walker3 = matrix.createWalker(cell);
+	                var walker4 = matrix.createWalker(cell);
+	
+	                var preventStep = function (cell) {
+	                    return !cell.rgba.isBlack();
+	                };
+	
+	                for (var i = 0; i <= limit; i++) {
+	                    walker1.moveUp(preventStep);
+	                    walker2.moveRight(preventStep);
+	                    walker3.moveDown(preventStep);
+	                    walker4.moveLeft(preventStep);
+	                }
+	
+	                var rectangle = new Rectangle(walker1.vector.clone(), walker2.vector.clone(), walker3.vector.clone(), walker4.vector.clone());
+	
+	                return rectangle;
+	            }
 	        }
 	    });
 	
@@ -326,6 +389,34 @@
 	                return new MatrixWalker(this, vector.clone());
 	            }
 	        },
+	        getCellByCoordinates: {
+	            /**
+	             * @param {Number} x
+	             * @param {Number} y
+	             * @returns {Cell}
+	             */
+	
+	            value: function getCellByCoordinates(x, y) {
+	                var _ref = this;
+	
+	                var data = _ref.data;
+	
+	                return data[y][x];
+	            }
+	        },
+	        getCellByVector: {
+	            /**
+	             * @param {Vector2} vector
+	             * @returns {*}
+	             */
+	
+	            value: function getCellByVector(vector) {
+	                var x = vector.x;
+	                var y = vector.y;
+	
+	                return this.getCellByCoordinates(x, y);
+	            }
+	        },
 	        forEach: {
 	            /**
 	             * @param {Function} cb
@@ -340,6 +431,30 @@
 	
 	                for (var i = 0; i < height; i++) {
 	                    for (var j = 0; j < width; j++) {
+	                        var cell = data[i][j];
+	                        cb(cell);
+	                    }
+	                }
+	            }
+	        },
+	        forEachRectangle: {
+	            /**
+	             * @param {Rectangle} rectangle
+	             * @param {Function} cb
+	             */
+	
+	            value: function forEachRectangle(rectangle, cb) {
+	                var top = rectangle.top;
+	                var right = rectangle.right;
+	                var bottom = rectangle.bottom;
+	                var left = rectangle.left;
+	
+	                var _ref = this;
+	
+	                var data = _ref.data;
+	
+	                for (var i = top.y; i <= bottom.y; i++) {
+	                    for (var j = left.x; j <= right.x; j++) {
 	                        var cell = data[i][j];
 	                        cb(cell);
 	                    }
@@ -494,7 +609,7 @@
 	                    var cells = new Array(width);
 	                    for (var j = 0; j < width; j++) {
 	                        var rgba = new Rgba(data[c0], data[c1], data[c2], data[c3]);
-	                        var vector = new Vector2(i, j);
+	                        var vector = new Vector2(j, i);
 	                        cells[j] = new Cell(rgba, vector);
 	                        c0 += STEP;
 	                        c1 += STEP;
@@ -761,6 +876,8 @@
 	
 	var Vector2 = _interopRequire(__webpack_require__(6));
 	
+	var noOperation = __webpack_require__(8).noOperation;
+	
 	var MatrixWalker = (function () {
 	    /**
 	     * @param {Matrix} matrix
@@ -797,73 +914,92 @@
 	        },
 	        moveUp: {
 	            /**
-	             *
+	             * @param {Function} [preventStep]
 	             */
 	
 	            value: function moveUp() {
+	                var preventStep = arguments[0] === undefined ? noOperation : arguments[0];
+	
 	                var _ref = this;
 	
 	                var vector = _ref.vector;
+	                var x = vector.x;
 	                var y = vector.y;
 	
-	                vector.y = this.__fixY(y - 1);
+	                this.jumpTo(x, y - 1, preventStep);
 	            }
 	        },
 	        moveRight: {
 	            /**
-	             *
+	             * @param {Function} [preventStep]
 	             */
 	
 	            value: function moveRight() {
+	                var preventStep = arguments[0] === undefined ? noOperation : arguments[0];
+	
 	                var _ref = this;
 	
 	                var vector = _ref.vector;
 	                var x = vector.x;
+	                var y = vector.y;
 	
-	                vector.x = this.__fixX(x + 1);
+	                this.jumpTo(x + 1, y, preventStep);
 	            }
 	        },
 	        moveDown: {
 	            /**
-	             *
+	             * @param {Function} [preventStep]
 	             */
 	
 	            value: function moveDown() {
-	                var _ref = this;
+	                var preventStep = arguments[0] === undefined ? noOperation : arguments[0];
 	
-	                var vector = _ref.vector;
-	                var y = vector.y;
-	
-	                vector.y = this.__fixY(y - 1);
-	            }
-	        },
-	        moveLeft: {
-	            /**
-	             *
-	             */
-	
-	            value: function moveLeft() {
 	                var _ref = this;
 	
 	                var vector = _ref.vector;
 	                var x = vector.x;
+	                var y = vector.y;
 	
-	                vector.x = this.__fixX(x - 1);
+	                this.jumpTo(x, y + 1, preventStep);
+	            }
+	        },
+	        moveLeft: {
+	            /**
+	             * @param {Function} [preventStep]
+	             */
+	
+	            value: function moveLeft() {
+	                var preventStep = arguments[0] === undefined ? noOperation : arguments[0];
+	
+	                var _ref = this;
+	
+	                var vector = _ref.vector;
+	                var x = vector.x;
+	                var y = vector.y;
+	
+	                this.jumpTo(x - 1, y, preventStep);
 	            }
 	        },
 	        jumpTo: {
 	            /**
 	             * @param {Number} x
 	             * @param {Number} y
+	             * @param {Function} [preventStep]
 	             */
 	
 	            value: function jumpTo(x, y) {
+	                var preventStep = arguments[2] === undefined ? noOperation : arguments[2];
+	
 	                var _ref = this;
 	
 	                var vector = _ref.vector;
 	
-	                vector.x = this.__fixX(x);
-	                vector.y = this.__fixY(y);
+	                x = this.__fixX(x);
+	                y = this.__fixY(y);
+	                if (this.__testPrevent(x, y, preventStep)) {
+	                    return;
+	                }vector.x = x;
+	                vector.y = y;
 	            }
 	        },
 	        __fixX: {
@@ -879,7 +1015,7 @@
 	                var matrix = _ref.matrix;
 	                var width = matrix.width;
 	
-	                x = Math.min(x, width);
+	                x = Math.min(x, width - 1);
 	                x = Math.max(x, 0);
 	                return x;
 	            }
@@ -897,9 +1033,27 @@
 	                var matrix = _ref.matrix;
 	                var height = matrix.height;
 	
-	                y = Math.min(y, height);
+	                y = Math.min(y, height - 1);
 	                y = Math.max(y, 0);
 	                return y;
+	            }
+	        },
+	        __testPrevent: {
+	            /**
+	             * @param {Number} x
+	             * @param {Number} y
+	             * @param {Function} preventFunction
+	             * @returns {*}
+	             * @private
+	             */
+	
+	            value: function __testPrevent(x, y, preventFunction) {
+	                var _ref = this;
+	
+	                var matrix = _ref.matrix;
+	
+	                var cell = matrix.getCellByCoordinates(x, y);
+	                return preventFunction(cell);
 	            }
 	        }
 	    });
@@ -911,6 +1065,54 @@
 
 /***/ },
 /* 8 */
+/***/ function(module, exports) {
+
+	
+	
+	/**
+	 * @see https://developer.mozilla.org/ru/docs/Web/JavaScript/Reference/Global_Objects/Math/random#Examples
+	 * @see https://learn.javascript.ru/number#���������-�����-��-min-��-max
+	 * @param {Number} min
+	 * @param {Number} max
+	 * @returns {Number}
+	 */
+	"use strict";
+	
+	exports.randomInteger = randomInteger;
+	
+	/**
+	 * @param {Array} array
+	 * @param {Number} count
+	 * @returns {Array}
+	 */
+	exports.randomItems = randomItems;
+	
+	/**
+	 * @returns {undefined}
+	 */
+	exports.noOperation = noOperation;
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	"use strict";
+	function randomInteger(min, max) {
+	  return Math.floor(Math.random() * (max + 1 - min)) + min;
+	}
+	
+	function randomItems(array, count) {
+	  var stack = new Array(count);
+	  var max = array.length - 1;
+	  for (var index = 0; index < count; index++, max--) {
+	    var randomIndex = randomInteger(0, max);
+	    stack[index] = array[randomIndex];
+	  }
+	  return stack;
+	}
+	
+	function noOperation() {}
+
+/***/ },
+/* 9 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -952,6 +1154,89 @@
 	})();
 	
 	module.exports = Writer;
+
+/***/ },
+/* 10 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	
+	var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
+	
+	var _createClass = (function () { function defineProperties(target, props) { for (var key in props) { var prop = props[key]; prop.configurable = true; if (prop.value) prop.writable = true; } Object.defineProperties(target, props); } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+	
+	var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
+	
+	var Vector2 = _interopRequire(__webpack_require__(6));
+	
+	var Rectangle = (function () {
+	    /**
+	     * @param {Vector2} top
+	     * @param {Vector2} right
+	     * @param {Vector2} bottom
+	     * @param {Vector2} left
+	     */
+	
+	    function Rectangle(top, right, bottom, left) {
+	        _classCallCheck(this, Rectangle);
+	
+	        this.top = top;
+	        this.right = right;
+	        this.bottom = bottom;
+	        this.left = left;
+	    }
+	
+	    _createClass(Rectangle, {
+	        width: {
+	            /**
+	             * @returns {Number}
+	             */
+	
+	            get: function () {
+	                var _ref = this;
+	
+	                var right = _ref.right;
+	                var left = _ref.left;
+	
+	                return right.x - left.x;
+	            }
+	        },
+	        height: {
+	            /**
+	             * @returns {Number}
+	             */
+	
+	            get: function () {
+	                var _ref = this;
+	
+	                var bottom = _ref.bottom;
+	                var top = _ref.top;
+	
+	                return bottom.y - top.y;
+	            }
+	        },
+	        clone: {
+	            /**
+	             * @returns {Rectangle}
+	             */
+	
+	            value: function clone() {
+	                var _ref = this;
+	
+	                var top = _ref.top;
+	                var right = _ref.right;
+	                var bottom = _ref.bottom;
+	                var left = _ref.left;
+	
+	                return new Rectangle(top.clone(), right.clone(), bottom.clone(), left.clone());
+	            }
+	        }
+	    });
+	
+	    return Rectangle;
+	})();
+	
+	module.exports = Rectangle;
 
 /***/ }
 /******/ ]);
