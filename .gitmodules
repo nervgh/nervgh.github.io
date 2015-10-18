@@ -1,3 +1,6 @@
 [submodule "pages/angular-file-upload"]
 	path = pages/angular-file-upload
 	url = https://github.com/nervgh/angular-file-upload.git
+[submodule "pages/recursive-iterator"]
+	path = pages/recursive-iterator
+	url = https://github.com/nervgh/recursive-iterator.git
