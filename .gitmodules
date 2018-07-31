@@ -4,3 +4,6 @@
 [submodule "pages/recursive-iterator"]
 	path = pages/recursive-iterator
 	url = https://github.com/nervgh/recursive-iterator.git
+[submodule "pages/tetris-problem"]
+	path = pages/tetris-problem
+	url = git@github.com:nervgh/tetris-problem.git
